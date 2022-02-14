@@ -1175,7 +1175,7 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving documents to db and generating link
-bot.on('document', async(ctx) => {
+bot.on('document', async(ctx, next) => {
 
     await new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -1183,7 +1183,7 @@ bot.on('document', async(ctx) => {
         }, 1_000);
     });
 
-     if(ctx.chat.type == 'private') {
+    if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             let document = ctx.message.document
 
@@ -1271,7 +1271,7 @@ bot.on('document', async(ctx) => {
 })
 
 //video files
-bot.on('video', async(ctx) => {
+bot.on('video', async(ctx, next) => {
 
     await new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -1367,7 +1367,7 @@ bot.on('video', async(ctx) => {
 })
 
 //photo files
-bot.on('photo', async(ctx) => {
+bot.on('photo', async(ctx, next) => {
 
     await new Promise((resolve, reject) => {
         setTimeout(() => {
