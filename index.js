@@ -1025,7 +1025,6 @@ bot.command('rem', async(ctx) => {
 })
 
 bot.command('remgrp', async(ctx) => {
-
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1054,7 +1053,6 @@ bot.command('clear', async(ctx)=>{
 
 //removing all files sent by a user
 bot.command('remall', async(ctx) => {
-    
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1470,7 +1468,6 @@ bot.command('stats',async(ctx)=>{
         }
     })
     const stats2 = await saver.getMedia().then(async res=>{
-
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             await ctx.reply(`📊 Total media: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
