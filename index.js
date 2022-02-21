@@ -97,13 +97,6 @@ const inKey2 = [
 
 //BOT START
 bot.start(async(ctx)=>{
-
-    await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          return resolve("Result");
-        }, 2_000);
-    });
-
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -389,7 +382,6 @@ bot.start(async(ctx)=>{
         //saving user details to the database
         await saver.saveUser(user)
     }
-    return next();
 })
 
 //DEFINING POP CALLBACK
@@ -1269,8 +1261,6 @@ bot.on('document', async(ctx, next) => {
                     await saver.saveFile(fileDetails1)
                 }
             })
-        }else{
-            console.log('no accept');
         }
     }
     return next();
@@ -1366,8 +1356,6 @@ bot.on('video', async(ctx, next) => {
                     await saver.saveFile(fileDetails1)
                 }
             })
-        }else{
-            console.log('no accept');
         }
     }
     return next();
@@ -1463,8 +1451,6 @@ bot.on('photo', async(ctx, next) => {
                     await saver.saveFile(fileDetails1)
                 }
             })
-        }else{
-            console.log('no accept');
         }
     }
     return next();
