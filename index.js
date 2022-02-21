@@ -110,10 +110,12 @@ bot.start(async(ctx)=>{
             userId:ctx.from.id
         }
 
+        deleted1 = ctx;
+
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             //welcoming message on /start and ifthere is a query available we can send files
             if(length == 1){
-                await ctx.deleteMessage()
+                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
                 const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
                 if(!profile || profile.total_count == 0)
                     return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
