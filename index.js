@@ -110,12 +110,10 @@ bot.start(async(ctx)=>{
             userId:ctx.from.id
         }
 
-        deleted1 = ctx;
-
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             //welcoming message on /start and ifthere is a query available we can send files
             if(length == 1){
-                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                
                 const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
                 if(!profile || profile.total_count == 0)
                     return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
@@ -148,7 +146,7 @@ bot.start(async(ctx)=>{
                                 parse_mode:'HTML'
                             })
                         }
-                        await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                        
                         await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
                         setTimeout(captionFunction, 1000)
                     }catch(error){
@@ -165,7 +163,7 @@ bot.start(async(ctx)=>{
                             })
                         }
                         if(res2.type=='video'){
-                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                            
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
                                 return await ctx.replyWithVideo(res2.file_id);
@@ -175,7 +173,7 @@ bot.start(async(ctx)=>{
                             });
                                 setTimeout(captionFunction2, 1000)
                         }else if(res2.type=='photo'){
-                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                            
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
                                 return await ctx.replyWithPhoto(res2.file_id);
@@ -185,7 +183,7 @@ bot.start(async(ctx)=>{
                             });
                                 setTimeout(captionFunction2, 1000)
                         }else if(res2.type=='document'){
-                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                            
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
                                 return await ctx.replyWithDocument(res2.file_id);
@@ -196,7 +194,7 @@ bot.start(async(ctx)=>{
                                 setTimeout(captionFunction2, 1000)
                         }
                     }catch(error){
-                        await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                        
                         await ctx.reply(`Media not found or has been removed.`)
                     }
                 }
@@ -212,11 +210,11 @@ bot.start(async(ctx)=>{
                         //console.log(res);
                         if(res == true) {
                             if(ctx.chat.type == 'private') {
-                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                
                                 await ctx.reply(`${messagebanned(ctx)}`)
                             }
                         }else{
-                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                            ctx.deleteMessage()
                             if(!profile2 || profile2.total_count == 0)
                                 return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,{
                                     parse_mode:'HTML',
@@ -242,11 +240,11 @@ bot.start(async(ctx)=>{
                                 //console.log(res);
                                 if(res == true) {
                                     if(ctx.chat.type == 'private') {
-                                        await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                        
                                         await ctx.reply(`${messagebanned(ctx)}`)
                                     }
                                 }else{
-                                    await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                    
                                     if(!profile3 || profile3.total_count == 0)
                                         return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
                                             parse_mode:'HTML',
@@ -283,13 +281,13 @@ bot.start(async(ctx)=>{
                                     await saver.checkBan(`${ctx.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                            
                                             if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage()
+                                                
                                                 await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                            
                                             await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
                                             setTimeout(captionFunction, 1000)
                                         }
@@ -299,7 +297,7 @@ bot.start(async(ctx)=>{
                                         //console.log(res);
                                         if(res == true) {
                                             if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                                
                                                 await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
@@ -321,12 +319,12 @@ bot.start(async(ctx)=>{
                                         //console.log(res);
                                         if(res == true) {
                                             if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                                
                                                 await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
                                             if(res2.type=='video'){
-                                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                                
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
                                                     return ctx.replyWithVideo(res2.file_id);
@@ -336,7 +334,7 @@ bot.start(async(ctx)=>{
                                                 });
                                                     setTimeout(captionFunction2, 1000)
                                             }else if(res2.type=='photo'){
-                                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                                
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
                                                     return await ctx.replyWithPhoto(res2.file_id);
@@ -346,7 +344,7 @@ bot.start(async(ctx)=>{
                                                 });
                                                     setTimeout(captionFunction2, 1000)
                                             }else if(res2.type=='document'){
-                                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                                
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
                                                     return await ctx.replyWithDocument(res2.file_id);
@@ -363,11 +361,11 @@ bot.start(async(ctx)=>{
                                         //console.log(res);
                                         if(res == true) {
                                             if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                                
                                                 await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                                            
                                             await ctx.reply(`Media not found or has been removed.`)
                                         }
                                     })
@@ -377,7 +375,7 @@ bot.start(async(ctx)=>{
                     }
                 }
             catch(error){
-                await ctx.deleteMessage(ctx.chat.id, deleted1.message_id)
+                
                 await ctx.reply(`${messagebotnoaddgroup(ctx)}`)
             }
         }
@@ -388,7 +386,7 @@ bot.start(async(ctx)=>{
 
 //DEFINING POP CALLBACK
 bot.action('POP', async(ctx)=>{
-    await ctx.deleteMessage()
+    
     await ctx.reply(`${messagelink(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
@@ -401,7 +399,7 @@ bot.action('POP', async(ctx)=>{
 
 //DEFINING DOC CALLBACK
 bot.action('DOC', async(ctx)=>{
-    await ctx.deleteMessage()
+    
     await ctx.reply(`${documentation(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
@@ -413,7 +411,7 @@ bot.action('DOC', async(ctx)=>{
 })
 
 bot.action('SRC', async(ctx)=>{
-    await ctx.deleteMessage()
+    
     await ctx.reply(`${helpcommand.botsrc}`,{
         parse_mode: 'HTML',
         reply_markup:{
@@ -426,7 +424,7 @@ bot.action('SRC', async(ctx)=>{
 })
 
 bot.action('HELP',async(ctx)=>{
-    await ctx.deleteMessage()
+    
     await ctx.reply(`${helpcommand.bothelp}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
@@ -440,7 +438,7 @@ bot.action('HELP',async(ctx)=>{
 })
 
 bot.action('COMM', async(ctx)=>{
-    await ctx.deleteMessage()
+    
     await ctx.reply(`${helpcommand.botcommand}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
@@ -453,7 +451,7 @@ bot.action('COMM', async(ctx)=>{
 })
 
 bot.action('STARTUP', async(ctx)=>{
-    await ctx.deleteMessage()
+    
     const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
     if(!profile || profile.total_count == 0)
         return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
@@ -479,11 +477,11 @@ bot.hears(/ping/i,async(ctx)=>{
             //console.log(res);
             if(res == true) {
                 if(ctx.chat.type == 'private') {
-                    await ctx.deleteMessage()
+                    
                     await ctx.reply(`${messagebanned(ctx)}`)
                 }
             }else{
-                await ctx.deleteMessage()
+                
                 let chatId = ctx.message.from.id;
                 let opts = {
                     reply_markup:{
@@ -497,7 +495,7 @@ bot.hears(/ping/i,async(ctx)=>{
 })
 
 bot.action('PONG',async(ctx)=>{
-    await ctx.deleteMessage()
+    
 })
 
 //GROUP COMMAND
@@ -509,12 +507,12 @@ bot.command('reload',async(ctx)=>{
     }
     if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
         if(memberstatus.status == 'creator' || memberstatus.status == 'administrator'){
-            await ctx.deleteMessage()
+            
             await ctx.reply('Bot restarted')
             await saver.saveGroup(group)
         }
         if(ctx.from.username == 'GroupAnonymousBot'){
-            await ctx.deleteMessage()
+            
             await ctx.reply('Bot restarted')
             await saver.saveGroup(group)
         }
@@ -536,7 +534,7 @@ bot.command('kick',async(ctx)=>{
 
                 if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){  
-                        await ctx.deleteMessage()  
+                          
                         if(memberstatus.can_restrict_members == true){       
                                                 if(ctx.message.reply_to_message == undefined){
                                 let args = ctx.message.text.split(" ").slice(1)
@@ -549,7 +547,7 @@ bot.command('kick',async(ctx)=>{
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage()
+                        
                         if(ctx.message.reply_to_message == undefined){
                             let args = ctx.message.text.split(" ").slice(1)
                             await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
@@ -561,7 +559,7 @@ bot.command('kick',async(ctx)=>{
                         })
                     }else{
                         if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage()
+                            
                             if(ctx.message.reply_to_message == undefined){
                                 let args = ctx.message.text.split(" ").slice(1)
                                 await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
@@ -595,7 +593,7 @@ bot.command('ban',async(ctx)=>{
 
                 if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage()
+                        
                         if(memberstatus.can_restrict_members == true){
                             if(ctx.message.reply_to_message == undefined){
                                const str = ctx.message.text;
@@ -643,7 +641,7 @@ bot.command('ban',async(ctx)=>{
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage()
+                        
                         if(ctx.message.reply_to_message == undefined){
                             const str = ctx.message.text;
                             const words = str.split(/ +/g);
@@ -690,7 +688,7 @@ bot.command('ban',async(ctx)=>{
                         })
                     }else{
                         if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage()
+                            
                             if(ctx.message.reply_to_message == undefined){
                                 const str = ctx.message.text;
                                 const words = str.split(/ +/g);
@@ -760,7 +758,7 @@ bot.command('unban',async(ctx)=>{
 
                 if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage()
+                        
                         if(memberstatus.can_restrict_members == true){
                             if(ctx.message.reply_to_message == undefined){
                                 let args = ctx.message.text.split(" ").slice(1)
@@ -781,7 +779,7 @@ bot.command('unban',async(ctx)=>{
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage()
+                        
                         if(ctx.message.reply_to_message == undefined){
                             let args = ctx.message.text.split(" ").slice(1)
                             await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
@@ -801,7 +799,7 @@ bot.command('unban',async(ctx)=>{
                         })
                     }else{
                         if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage()
+                            
                             if(ctx.message.reply_to_message == undefined){
                                 let args = ctx.message.text.split(" ").slice(1)
                                 await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
@@ -843,7 +841,7 @@ bot.command('pin',async(ctx)=>{
 
                 if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage()
+                        
                         if(memberstatus.can_pin_messages == true){
                             await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
                                 disable_notification: false,
@@ -852,7 +850,7 @@ bot.command('pin',async(ctx)=>{
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage()
+                        
                         await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
                             disable_notification: false,
                         }).then(async result =>{
@@ -860,7 +858,7 @@ bot.command('pin',async(ctx)=>{
                         })
                     }else{
                         if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage()
+                            
                             await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
                                 disable_notification: false,
                             }).then(async result =>{
@@ -890,20 +888,20 @@ bot.command('unpin',async(ctx)=>{
 
                 if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage()
+                        
                         if(memberstatus.can_pin_messages == true){
                             await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage()
+                        
                         await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
                             //console.log(result)
                         })
                     }else{
                         if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage()
+                            
                             await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
                                 //console.log(result)
                             })
@@ -931,7 +929,7 @@ bot.command('send',async(ctx)=>{
 
                 if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'creator' || memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage()
+                        
                         if(ctx.message.reply_to_message == undefined){
                             const str = ctx.message.text;
                             const words = str.split(/ +/g);
@@ -950,7 +948,7 @@ bot.command('send',async(ctx)=>{
                         })
                     }
                     if(ctx.from.username == 'GroupAnonymousBot'){
-                        await ctx.deleteMessage()
+                        
                         if(ctx.message.reply_to_message == undefined){
                             const str = ctx.message.text;
                             const words = str.split(/ +/g);
@@ -985,17 +983,17 @@ bot.command('getid',async(ctx)=>{
             //console.log(res);
             if(res == true) {
                 if(ctx.chat.type == 'private') {
-                    await ctx.deleteMessage()
+                    
                     await ctx.reply(`${messagebanned(ctx)}`)
                 }
             }else{
                 if(!profile4 || profile4.total_count == 0){
-                    await ctx.deleteMessage()
+                    
                     await ctx.reply(`<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${ctx.from.id}`,{
                         parse_mode:'HTML'  
                     })
                 }else{
-                    await ctx.deleteMessage()
+                    
                     await ctx.replyWithPhoto(profile4.photos[0][0].file_id,{caption: `<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${ctx.from.id}`,
                         parse_mode:'HTML'
                     })
@@ -1017,7 +1015,7 @@ bot.command('rem', async(ctx) => {
         console.log(text);
 
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage()
+            
             saver.removeFile(text)
             await ctx.reply('❌ 1 media deleted successfully')
         }
@@ -1034,7 +1032,7 @@ bot.command('remgrp', async(ctx) => {
         //console.log(media);
 
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage()
+            
             saver.removeFileMedia(media)
             await ctx.reply('❌ Media group deleted successfully')
         }
@@ -1045,7 +1043,7 @@ bot.command('remgrp', async(ctx) => {
 bot.command('clear', async(ctx)=>{
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage()
+            
             await saver.deleteCollection()
             await ctx.reply('❌ All media deleted successfully')
         }
@@ -1063,7 +1061,7 @@ bot.command('remall', async(ctx) => {
         let id = parseInt(text)
 
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage()
+            
             await saver.removeUserFile(id)
             await ctx.reply('❌ Delete all user media successfully')
         }
@@ -1111,12 +1109,12 @@ bot.command('broadcast',async(ctx)=>{
             }
 
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                await ctx.deleteMessage()
+                
                 broadcast(text)
                 await ctx.reply('Broadcast starts (Message is broadcast from last joined to first).')
 
             }else{
-                await ctx.deleteMessage()
+                
                 await ctx.reply(`Commands can only be used by Admin.`) 
             }
 
@@ -1139,7 +1137,7 @@ bot.command('banchat', async(ctx) => {
 
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                await ctx.deleteMessage()
+                
                 await saver.banUser(userId).then(async res => {
                     await ctx.reply('❌ Banned')
                 })
@@ -1163,7 +1161,7 @@ bot.command('unbanchat', async(ctx) => {
 
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                await ctx.deleteMessage()
+                
                 await saver.unBan(userId).then(async res => {
                     await ctx.reply('✅ Finished')
                 })
@@ -1459,7 +1457,7 @@ bot.on('photo', async(ctx, next) => {
 })
 
 bot.command('stats',async(ctx)=>{
-    await ctx.deleteMessage()
+    
     const stats1 = await saver.getUser().then(async res=>{
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             await ctx.reply(`📊 Total users: <b>${res.length}</b>`,{parse_mode:'HTML'})
