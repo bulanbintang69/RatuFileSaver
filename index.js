@@ -1261,6 +1261,8 @@ bot.on('document', async(ctx, next) => {
                     await saver.saveFile(fileDetails1)
                 }
             })
+        }else{
+            console.log('no accept');
         }
     }
     return next();
@@ -1356,6 +1358,8 @@ bot.on('video', async(ctx, next) => {
                     await saver.saveFile(fileDetails1)
                 }
             })
+        }else{
+            console.log('no accept');
         }
     }
     return next();
@@ -1451,6 +1455,8 @@ bot.on('photo', async(ctx, next) => {
                     await saver.saveFile(fileDetails1)
                 }
             })
+        }else{
+            console.log('no accept');
         }
     }
     return next();
