@@ -1482,7 +1482,7 @@ bot.command('stats',async(ctx)=>{
 
 bot.hears(/start/i,async(ctx)=>{
     await ctx.deletedMessage();
-}
+})
  
 //heroku config
 domain = `${process.env.DOMAIN}.herokuapp.com`
