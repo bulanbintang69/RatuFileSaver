@@ -1480,8 +1480,8 @@ bot.command('stats',async(ctx)=>{
     })
 })
 
-bot.hears(/start/i,async(ctx)=>{
-    await ctx.deletedMessage();
+bot.hears(/start,async(ctx)=>{
+    await ctx.deleteMessage();
 })
  
 //heroku config
