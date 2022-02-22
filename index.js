@@ -1479,10 +1479,6 @@ bot.command('stats',async(ctx)=>{
         }
     })
 })
-
-bot.hears(/start,async(ctx)=>{
-    await ctx.deleteMessage()
-})
  
 //heroku config
 domain = `${process.env.DOMAIN}.herokuapp.com`
