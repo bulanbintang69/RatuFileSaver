@@ -130,6 +130,7 @@ bot.start(async(ctx)=>{
                             inline_keyboard:inKey
                         }
                     })
+                await ctx.deleteMessage(ctx.message.message_id)
             }else{
                 if(query.indexOf('grp_') > -1){
                     let query1 = query.replace('grp_','');
