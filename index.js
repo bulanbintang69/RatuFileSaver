@@ -1256,7 +1256,7 @@ bot.on('document', async(ctx, next) => {
                     })
                     const fileDetails1 = {
                         file_name: file_name2,
-                        userId:ctx.from.id,
+                        userId: ctx.from.id,
                         file_id: document.file_id,
                         mediaId: ctx.message.media_group_id,
                         caption: ctx.message.caption,
@@ -1349,9 +1349,14 @@ bot.on('video', async(ctx, next) => {
                         caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
                         parse_mode:'HTML'
                     })
+                    await ctx.replyWithVideo(video.file_id, {
+                        chat_id: ctx.from.id,
+                        caption: `${caption2}`,
+                        parse_mode:'HTML'
+                    })
                     const fileDetails1 = {
                         file_name: file_name2,
-                        userId:ctx.from.id,
+                        userId: ctx.from.id,
                         file_id: video.file_id,
                         mediaId: ctx.message.media_group_id,
                         caption: ctx.message.caption,
@@ -1446,7 +1451,7 @@ bot.on('photo', async(ctx, next) => {
                     })
                     const fileDetails1 = {
                         file_name: file_name2,
-                        userId:ctx.from.id,
+                        userId: ctx.from.id,
                         file_id: photo.file_id,
                         mediaId: ctx.message.media_group_id,
                         caption: ctx.message.caption,
