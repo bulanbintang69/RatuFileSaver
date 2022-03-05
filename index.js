@@ -386,7 +386,7 @@ bot.start(async(ctx)=>{
 
 //DEFINING POP CALLBACK
 bot.action('POP', async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await ctx.deleteMessage()
     await ctx.reply(`${messagelink(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
@@ -399,7 +399,7 @@ bot.action('POP', async(ctx)=>{
 
 //DEFINING DOC CALLBACK
 bot.action('DOC', async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await ctx.deleteMessage()
     await ctx.reply(`${documentation(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
@@ -411,7 +411,7 @@ bot.action('DOC', async(ctx)=>{
 })
 
 bot.action('SRC', async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await ctx.deleteMessage()
     await ctx.reply(`${helpcommand.botsrc}`,{
         parse_mode: 'HTML',
         reply_markup:{
@@ -424,7 +424,7 @@ bot.action('SRC', async(ctx)=>{
 })
 
 bot.action('HELP',async(ctx)=>{
-    //await ctx.deleteMessage(ctx.message.message_id)
+    await ctx.deleteMessage()
     await ctx.reply(`${helpcommand.bothelp}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
@@ -438,7 +438,7 @@ bot.action('HELP',async(ctx)=>{
 })
 
 bot.action('COMM', async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await ctx.deleteMessage()
     await ctx.reply(`${helpcommand.botcommand}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
@@ -451,7 +451,7 @@ bot.action('COMM', async(ctx)=>{
 })
 
 bot.action('STARTUP', async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await ctx.deleteMessage()
     const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
     if(!profile || profile.total_count == 0)
         return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
