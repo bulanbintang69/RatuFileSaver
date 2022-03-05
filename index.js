@@ -1257,7 +1257,7 @@ bot.on('document', async(ctx, next) => {
                         let mediaalbum = [];
                         for (let index = 0; index < album.length; index++) {
                             const data = album[index];
-                            mediaalbum.push({caption: `${data}.\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`, parse_mode:'HTML'});
+                            mediaalbum.push({caption: `${data}.${mediaId2}`, parse_mode:'HTML'});
                         }
                         await ctx.telegram.sendMediaGroup(ctx.from.id, mediaalbum);
                     }
