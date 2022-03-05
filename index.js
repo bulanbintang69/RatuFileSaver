@@ -1244,23 +1244,13 @@ bot.on('document', async(ctx, next) => {
                         reply_to_message_id: ctx.message.message_id
                     })
                 }else{
-                    if(ctx.message.media_group_id == undefined){
-                        await ctx.replyWithDocument(document.file_id, {
-                            chat_d: ctx.from.id,
-                            caption: `${tag} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id}`,
-                            parse_mode: 'HTML',
-                            disable_web_page_preview: true,
-                            reply_to_message_id: ctx.message.message_id
-                        })
-                    }else{
-                        const album = ctx.message.media_group_id
-                        let mediaalbum = [];
-                        for (let index = 0; index < album.length; index++) {
-                            const data = album[index];
-                            mediaalbum.push({caption: `${data}.${mediaId2}`, parse_mode:'HTML'});
-                        }
-                        await ctx.telegram.sendMediaGroup(ctx.from.id, mediaalbum);
-                    }
+                    await ctx.replyWithDocument(document.file_id, {
+                        chat_d: ctx.from.id,
+                        caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2}`,
+                        parse_mode: 'HTML',
+                        disable_web_page_preview: true,
+                        reply_to_message_id: ctx.message.message_id
+                    })
                     await ctx.replyWithDocument(document.file_id, {
                         chat_id: process.env.LOG_CHANNEL,
                         caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
