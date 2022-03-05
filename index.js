@@ -424,7 +424,7 @@ bot.action('SRC', async(ctx)=>{
 })
 
 bot.action('HELP',async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    //await ctx.deleteMessage(ctx.message.message_id)
     await ctx.reply(`${helpcommand.bothelp}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
