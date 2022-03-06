@@ -1213,7 +1213,7 @@ function startDocProcessing () {
 }
 
 async function upload (doc) {
-    return await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
 
         // Process file here
         if(ctx.chat.type == 'private') {
@@ -1307,7 +1307,7 @@ async function upload (doc) {
 }
 
 async function upload2 (vid) {
-    return await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
 
         // Process file here
         if(ctx.chat.type == 'private') {
@@ -1401,7 +1401,7 @@ async function upload2 (vid) {
 }
 
 async function upload3 (phot) {
-    return await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
 
         // Process file here
         if(ctx.chat.type == 'private') {
