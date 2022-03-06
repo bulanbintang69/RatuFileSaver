@@ -1192,7 +1192,7 @@ bot.on('document', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 2_000);
+        }, 1_000);
     });
 
     if(ctx.chat.type == 'private') {
@@ -1289,7 +1289,7 @@ bot.on('video', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
         return resolve("Result");
-        }, 2_000);
+        }, 1_000);
     });
 
     if(ctx.chat.type == 'private') {
@@ -1386,7 +1386,7 @@ bot.on('photo', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 2_000);
+        }, 1_000);
     });
 
     if(ctx.chat.type == 'private') {
