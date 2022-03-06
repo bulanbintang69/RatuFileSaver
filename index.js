@@ -540,7 +540,7 @@ bot.command('kick',async(ctx)=>{
                     if(memberstatus.status == 'administrator'){  
                         await ctx.deleteMessage(ctx.message.message_id)  
                         if(memberstatus.can_restrict_members == true){       
-                                                if(ctx.message.reply_to_message == undefined){
+                            if(ctx.message.reply_to_message == undefined){
                                 let args = ctx.message.text.split(" ").slice(1)
                                 await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
