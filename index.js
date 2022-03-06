@@ -5,7 +5,6 @@ const bot = new Telegraf(process.env.TOKEN, {
    handlerTimeout: 90_000,
 });
 
-
 process.env.TZ = "Asia/Jakarta";
 
 //database
