@@ -1212,7 +1212,7 @@ function startDocProcessing () {
     return Promise.all(data).catch(console.error)
 }
 
-function upload (doc) {
+async function upload (doc) {
     return new Promise((resolve, reject) => {
 
         // Process file here
@@ -1306,7 +1306,7 @@ function upload (doc) {
     })
 }
 
-function upload2 (vid) {
+async function upload2 (vid) {
     return new Promise((resolve, reject) => {
 
         // Process file here
@@ -1400,7 +1400,7 @@ function upload2 (vid) {
     })
 }
 
-function upload3 (phot) {
+async function upload3 (phot) {
     return new Promise((resolve, reject) => {
 
         // Process file here
