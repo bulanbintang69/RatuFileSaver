@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 const bot = new Telegraf(process.env.TOKEN, {
-   handlerTimeout: ms('5s')
+   handlerTimeout: 90_000,
 });
 
 process.env.TZ = "Asia/Jakarta";
