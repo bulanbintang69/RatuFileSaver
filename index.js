@@ -21,11 +21,11 @@ db.connect((err) => {
 })
 
 bot.use(async (ctx, next) => {
-    console.time(`Processing update ${ctx.update.update_id}`)
-    await next() // runs next middleware
-    // runs after next middleware finishes
-    console.timeEnd(`Processing update ${ctx.update.update_id}`)
-  })
+  console.time(`Processing update ${ctx.update.update_id}`)
+  await next() // runs next middleware
+  // runs after next middleware finishes
+  console.timeEnd(`Processing update ${ctx.update.update_id}`)
+})
 
 //ID Channel/Group
 const channelId = `${process.env.CHANNELJOIN}`;
@@ -1192,7 +1192,7 @@ bot.on('document', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1_000);
+        }, 2_000);
     });
 
     if(ctx.chat.type == 'private') {
@@ -1289,7 +1289,7 @@ bot.on('video', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
         return resolve("Result");
-        }, 1_000);
+        }, 2_000);
     });
 
     if(ctx.chat.type == 'private') {
@@ -1386,7 +1386,7 @@ bot.on('photo', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1_000);
+        }, 2_000);
     });
 
     if(ctx.chat.type == 'private') {
