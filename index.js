@@ -1189,6 +1189,11 @@ bot.command('unbanchat', async(ctx) => {
 
 //saving documents to db and generating link
 bot.on('document', async(ctx) => {
+    await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2_000);
+    });
 
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1276,10 +1281,16 @@ bot.on('document', async(ctx) => {
             })
         }
     }
+    return next();
 })
 
 //video files
-bot.on('video', async(ctx) => {
+bot.on('video', async(ctx, next) => {
+    await new Promise((resolve, reject) => {
+        setTimeout(() => {
+        return resolve("Result");
+        }, 2_000);
+    });
 
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1367,10 +1378,16 @@ bot.on('video', async(ctx) => {
             })
         }
     }
+    return next();
 })
 
 //photo files
-bot.on('photo', async(ctx) => {
+bot.on('photo', async(ctx, next) => {
+    await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2_000);
+    });
 
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1458,6 +1475,7 @@ bot.on('photo', async(ctx) => {
             })
         }
     }
+    return next();
 })
 
 bot.command('stats',async(ctx)=>{
