@@ -1207,9 +1207,9 @@ bot.on(['document', 'video', 'photo'], ctx => {
 })
 
 function startDocProcessing () {
-    const data = media.map(doc => upload(doc))
-    const data2 = media.map(vid => upload2(vid))
-    const data3 = media.map(phot => upload3(phot))
+    const data = media.map(async doc => upload(doc))
+    const data2 = media.map(async vid => upload2(vid))
+    const data3 = media.map(async phot => upload3(phot))
     return Promise.all(data).catch(console.error)
 }
 
