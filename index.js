@@ -1206,7 +1206,7 @@ bot.on(['document', 'video', 'photo'], ctx => {
     }
 })
 
-function startDocProcessing () {
+async function startDocProcessing () {
     const data = media.map(async doc => {
         return await new Promise((resolve, reject) => {
 
@@ -1300,7 +1300,7 @@ function startDocProcessing () {
             //end
         })
     })
-    
+
     const data2 = media.map(async vid => {
         return await new Promise((resolve, reject) => {
 
