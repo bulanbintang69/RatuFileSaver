@@ -1269,7 +1269,7 @@ async function upload (doc) {
                     }
                 }
 
-                await saver.checkFile(`${document.file_unique_id}`).then(res => {
+                await saver.checkFile(`${document.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
                         await ctx.reply(`File already exists.`,{
@@ -1363,7 +1363,7 @@ async function upload2 (vid) {
                     }
                 }
     
-                await saver.checkFile(`${video.file_unique_id}`).then(res => {
+                await saver.checkFile(`${video.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
                         await ctx.reply(`File already exists.`,{
@@ -1457,7 +1457,7 @@ async function upload3 (phot) {
                     }
                 }
     
-                await saver.checkFile(`${photo.file_unique_id}`).then(res => {
+                await saver.checkFile(`${photo.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
                         await ctx.reply(`File already exists.`,{
