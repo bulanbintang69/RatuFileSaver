@@ -1204,7 +1204,6 @@ bot.on(['document', 'video', 'photo'], async (ctx,next) => {
         startDocProcessing();
 
     }
-    return next();
 })
 
 async function startDocProcessing () {
@@ -1216,11 +1215,10 @@ async function startDocProcessing () {
 
 async function upload (doc) {
     await new Promise((resolve, reject) => {
-
-        // Process file here
-        return resolve("Result");
-        //end
-    })
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2_000);
+    });
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const document = ctx.message.document
@@ -1307,14 +1305,15 @@ async function upload (doc) {
             })
         }
     }
+    return next();
 }
 
 async function upload2 (vid) {
     await new Promise((resolve, reject) => {
-        // Process file here
-        return resolve("Result");
-        //end
-    })
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2_000);
+    });
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const video = ctx.message.video
@@ -1401,14 +1400,15 @@ async function upload2 (vid) {
             })
         }
     }
+    return next();
 }
 
 async function upload3 (phot) {
     await new Promise((resolve, reject) => {
-        // Process file here
-        return resolve("Result");
-        //end
-    })
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2_000);
+    });
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const photo = ctx.message.photo[1]
@@ -1495,6 +1495,7 @@ async function upload3 (phot) {
             })
         }
     }
+    return next();
 }
 
 bot.command('stats',async(ctx)=>{
