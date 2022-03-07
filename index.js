@@ -1187,7 +1187,7 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 const media = []
-bot.on(['document', 'video', 'photo'], async ctx => {
+bot.on(['document', 'video', 'photo'], async (ctx,next) => {
 
     const { document } = ctx
     const { video } = ctx
@@ -1204,6 +1204,7 @@ bot.on(['document', 'video', 'photo'], async ctx => {
         startDocProcessing();
 
     }
+    return next();
 })
 
 async function startDocProcessing () {
