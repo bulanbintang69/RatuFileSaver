@@ -1187,8 +1187,7 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 const media = []
-bot.on(['document', 'video', 'photo'], async (ctx,next) => {
-
+bot.on(['document', 'video', 'photo'], async (ctx) => {
     const { document } = ctx
     const { video } = ctx
     const { photo } = ctx
@@ -1305,7 +1304,6 @@ async function upload (doc) {
             })
         }
     }
-    return next();
 }
 
 async function upload2 (vid) {
@@ -1400,7 +1398,6 @@ async function upload2 (vid) {
             })
         }
     }
-    return next();
 }
 
 async function upload3 (phot) {
@@ -1495,7 +1492,6 @@ async function upload3 (phot) {
             })
         }
     }
-    return next();
 }
 
 bot.command('stats',async(ctx)=>{
