@@ -1186,38 +1186,14 @@ bot.command('unbanchat', async(ctx) => {
     
 })
 
-const media = []
-bot.on(['document', 'video', 'photo'], ctx => {
-    const { document } = ctx
-    const { video } = ctx
-    const { photo } = ctx
-    if (document) {
-        media.push(document)
-        startDocProcessing();
-    }else if (video) {
-        media.push(video)
-        startDocProcessing();
-
-    }else if (photo) {
-        media.push(photo)
-        startDocProcessing();
-
-    }
-})
-
-function startDocProcessing () {
-    const data = media.map(doc => upload(doc))
-    const data2 = media.map(vid => upload2(vid))
-    const data3 = media.map(phot => upload3(phot))
-    return Promise.all(data).catch(console.error)
-}
-
-async function upload (doc) {
+//saving documents to db and generating link
+bot.on('document', async(ctx) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
         }, 2_000);
     });
+
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const document = ctx.message.document
@@ -1304,14 +1280,17 @@ async function upload (doc) {
             })
         }
     }
-}
+    return next();
+})
 
-async function upload2 (vid) {
+//video files
+bot.on('video', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
-          return resolve("Result");
+        return resolve("Result");
         }, 2_000);
     });
+
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const video = ctx.message.video
@@ -1398,14 +1377,17 @@ async function upload2 (vid) {
             })
         }
     }
-}
+    return next();
+})
 
-async function upload3 (phot) {
+//photo files
+bot.on('photo', async(ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
         }, 2_000);
     });
+
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const photo = ctx.message.photo[1]
@@ -1492,7 +1474,8 @@ async function upload3 (phot) {
             })
         }
     }
-}
+    return next();
+})
 
 bot.command('stats',async(ctx)=>{
     await ctx.deleteMessage(ctx.message.message_id)
