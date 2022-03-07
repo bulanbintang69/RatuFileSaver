@@ -1186,7 +1186,7 @@ bot.command('unbanchat', async(ctx) => {
     
 })
 
-//saving documents to db and generating link
+//saving file
 bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     if (ctx.message.document) {
         await new Promise((resolve, reject) => {
