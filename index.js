@@ -1214,7 +1214,7 @@ function startDocProcessing () {
 }
 
 async function upload (doc) {
-    await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
 
         // Process file here
         if(ctx.chat.type == 'private') {
@@ -1269,7 +1269,7 @@ async function upload (doc) {
                     }
                 }
 
-                await saver.checkFile(`${document.file_unique_id}`).then(async res => {
+                return await saver.checkFile(`${document.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
                         await ctx.reply(`File already exists.`,{
@@ -1308,7 +1308,7 @@ async function upload (doc) {
 }
 
 async function upload2 (vid) {
-    await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
 
         // Process file here
         if(ctx.chat.type == 'private') {
@@ -1402,7 +1402,7 @@ async function upload2 (vid) {
 }
 
 async function upload3 (phot) {
-    await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
 
         // Process file here
         if(ctx.chat.type == 'private') {
