@@ -1200,7 +1200,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
         });
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const document = ctx.message.document
+                const document = media
     
                 if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Document save`;
@@ -1294,7 +1294,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
         });
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const video = ctx.message.video
+                const video = media2
         
                 if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Video save`;
@@ -1388,7 +1388,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
         });
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const photo = ctx.message.photo[1]
+                const photo = media3
     
                 if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Photo save`;
