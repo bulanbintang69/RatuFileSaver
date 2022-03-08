@@ -1190,7 +1190,7 @@ bot.command('unbanchat', async(ctx) => {
 const media = []
 const media2 = []
 const media3 = []
-bot.on(['document', 'video', 'photo'], (ctx) => {
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     if (ctx.message.document) {
         media.push(ctx.message.document)
         await new Promise((resolve, reject) => {
