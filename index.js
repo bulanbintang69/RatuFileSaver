@@ -1191,9 +1191,9 @@ const media = []
 const media2 = []
 const media3 = []
 bot.on(['document', 'video', 'photo'], ctx => {
-    const { document } = ctx.message.document
-    const { video } = ctx.message.video
-    const { photo } = ctx.message.photo[1]
+    document = ctx.message.document
+    video = ctx.message.video
+    photo = ctx.message.photo[1]
     if (document) {
         media.push(document)
         startDocProcessing();
