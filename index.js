@@ -1191,18 +1191,14 @@ const media = []
 const media2 = []
 const media3 = []
 bot.on(['document', 'video', 'photo'], ctx => {
-    document = ctx.message.document
-    video = ctx.message.video
-    photo = ctx.message.photo[1]
-    if (document) {
-        media.push(document)
+    if (ctx.message.document) {
+        media.push(ctx.message.document)
         startDocProcessing();
-    }else if (video) {
-        media2.push(video)
+    }else if (ctx.message.video) {
+        media2.push(ctx.message.video)
         startDocProcessing();
-
-    }else if (photo) {
-        media3.push(photo)
+    }else if (ctx.message.photo[1]) {
+        media3.push(ctx.message.photo[1])
         startDocProcessing();
 
     }
