@@ -1187,20 +1187,17 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-const media = []
-const media2 = []
-const media3 = []
 bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     if (ctx.message.document) {
-        media.push(ctx.message.document)
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
-            }, 1_000);
+            }, 2_000);
         });
+    
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const document = media
+                const document = ctx.message.document
     
                 if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Document save`;
@@ -1283,18 +1280,18 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                     }
                 })
             }
-            return next();
         }
-    }else if (ctx.message.video) {
-        media2.push(ctx.message.video)
+        return next();
+    } else if (ctx.message.video) {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
-              return resolve("Result");
-            }, 1_000);
+            return resolve("Result");
+            }, 2_000);
         });
+    
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const video = media2
+                const video = ctx.message.video
         
                 if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Video save`;
@@ -1377,18 +1374,18 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                     }
                 })
             }
-            return next();
         }
-    }else if (ctx.message.photo[1]) {
-        media3.push(ctx.message.photo[1])
+        return next();
+    } else if (ctx.message.photo[1]) {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
-            }, 1_000);
+            }, 2_000);
         });
+    
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const photo = media3
+                const photo = ctx.message.photo[1]
     
                 if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Photo save`;
@@ -1473,6 +1470,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
             }
         }
         return next();
+
     }
 })
 
