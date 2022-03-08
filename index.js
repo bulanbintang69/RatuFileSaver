@@ -1194,7 +1194,9 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     if (ctx.message.document) {
         media.push(ctx.message.document)
         await new Promise((resolve, reject) => {
-            return resolve("Result");
+            setTimeout(() => {
+              return resolve("Result");
+            }, 1_000);
         });
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1286,7 +1288,9 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     }else if (ctx.message.video) {
         media2.push(ctx.message.video)
         await new Promise((resolve, reject) => {
-            return resolve("Result");
+            setTimeout(() => {
+              return resolve("Result");
+            }, 1_000);
         });
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1378,7 +1382,9 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     }else if (ctx.message.photo[1]) {
         media3.push(ctx.message.photo[1])
         await new Promise((resolve, reject) => {
-            return resolve("Result");
+            setTimeout(() => {
+              return resolve("Result");
+            }, 1_000);
         });
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
