@@ -1190,7 +1190,7 @@ bot.command('unbanchat', async(ctx) => {
 const media = []
 const media2 = []
 const media3 = []
-bot.on(['document', 'video', 'photo'], async(ctx) => {
+bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     if (ctx.message.document) {
         media.push(ctx.message.document)
         await new Promise((resolve, reject) => {
@@ -1281,6 +1281,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
                     }
                 })
             }
+            return next();
         }
     }else if (ctx.message.video) {
         media2.push(ctx.message.video)
@@ -1372,6 +1373,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
                     }
                 })
             }
+            return next();
         }
     }else if (ctx.message.photo[1]) {
         media3.push(ctx.message.photo[1])
@@ -1464,6 +1466,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
                 })
             }
         }
+        return next();
     }
 })
 
