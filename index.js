@@ -1187,16 +1187,10 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-bot.on(['document', 'video', 'photo'], async(ctx,next) => {
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const element = array1.shift();
-    if (element.message.document) {
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              return resolve("Result");
-            }, 1_000);
-        });
-    
+    if (element.message.document) {  
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
                 const document = ctx.message.document
@@ -1283,14 +1277,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 })
             }
         }
-        return next();
     } else if (element.message.video) {
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-            return resolve("Result");
-            }, 1_000);
-        });
-    
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
                 const video = ctx.message.video
@@ -1377,14 +1364,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 })
             }
         }
-        return next();
     } else if (element.message.photo[1]) {
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              return resolve("Result");
-            }, 1_000);
-        });
-    
         if(ctx.chat.type == 'private') {
             if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
                 const photo = ctx.message.photo[1]
@@ -1471,8 +1451,6 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 })
             }
         }
-        return next();
-
     }
 })
 
