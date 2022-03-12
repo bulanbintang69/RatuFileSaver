@@ -1187,8 +1187,11 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
+const mediapush = []
 bot.on(['document', 'video', 'photo'], async(ctx,next) => {
-    if (ctx.message.document) {
+    const {ctx2} = ctx
+    mediapush.push(ctx2)
+    if (mediapush.message.document) {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
@@ -1282,7 +1285,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
             }
         }
         return next();
-    } else if (ctx.message.video) {
+    } else if (mediapush.message.video) {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
             return resolve("Result");
@@ -1376,7 +1379,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
             }
         }
         return next();
-    } else if (ctx.message.photo[1]) {
+    } else if (mediapush.message.photo[1]) {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
