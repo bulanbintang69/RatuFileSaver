@@ -1187,8 +1187,8 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-const array1 = [];
 bot.on(['document', 'video', 'photo'], async(ctx,next) => {
+    const array1 = [ctx];
     const element = array1.shift();
     if (element.message.document) {
         await new Promise((resolve, reject) => {
