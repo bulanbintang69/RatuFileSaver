@@ -1189,7 +1189,7 @@ bot.command('unbanchat', async(ctx) => {
 //saving file
 const mediapush = []
 bot.on(['document', 'video', 'photo'], async(ctx,next) => {
-    const {ctx2} = ctx
+    const ctx2 = ctx
     mediapush.push(ctx2)
     if (mediapush.message.document) {
         await new Promise((resolve, reject) => {
