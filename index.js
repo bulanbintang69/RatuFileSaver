@@ -1192,14 +1192,14 @@ bot.on(['document', 'video', 'photo'], ctx => {
     const { document } = ctx
     const { video } = ctx
     const { photo } = ctx
-    if (document.message.document) {
-        media.push(document.message.document)
+    if (document) {
+        media.push(document)
         startDocProcessing(ctx);
-    } else if (video.message.video) {
-        media.push(video.message.video)
+    } else if (video) {
+        media.push(video)
         startDocProcessing(ctx);
-    } else if (photo.message.photo) {
-        media.push(photo.message.photo)
+    } else if (photo) {
+        media.push(photo)
         startDocProcessing(ctx);
     }
 })
