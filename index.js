@@ -1202,8 +1202,8 @@ bot.on(['document', 'video', 'photo'], ctx => {
     } else if (photo) {
         media.push(photo)
         startDocProcessing();
-
     }
+    console.log(media)
 })
 
 function startDocProcessing () {
