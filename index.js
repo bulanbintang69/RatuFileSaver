@@ -1408,7 +1408,7 @@ async function upload3 (phot) {
     });
     if(data3.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            const photo = ctx.message.photo[1]
+            const photo = data3.message.photo[1]
 
             if(data3.message.media_group_id == undefined){
                 var tag = `✔️ Photo save`;
