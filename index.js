@@ -1187,8 +1187,8 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-const media = []
 bot.on(['document', 'video', 'photo'], ctx => {
+    const media = []
     const { document } = ctx
     const { video } = ctx
     const { photo } = ctx
