@@ -1183,7 +1183,6 @@ bot.command('unbanchat', async(ctx) => {
 bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const element = array1.shift();
-    console.log(element);
     if (element.message.document) {  
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
