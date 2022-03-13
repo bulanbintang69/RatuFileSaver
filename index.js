@@ -1188,24 +1188,23 @@ bot.command('unbanchat', async(ctx) => {
 
 //saving file
 const media = []
-bot.on(['document', 'video', 'photo'], async (ctx) => {
+bot.on(['document', 'video', 'photo'], (ctx) => {
     console.log(ctx);
-    const { document } = ctx
-    const { video } = ctx
-    const { photo } = ctx
-    if (document) {
-        media.push(document)
+    const array1 = [ctx];
+    const element = array1.shift();
+    if (element.message.document) {
+        media.push(element.message.document)
         startDocProcessing();
-    }else if (video) {
-        media.push(video)
+    }else if (element.message.video) {
+        media.push(element.message.video)
         startDocProcessing();
-    }else if (photo) {
-        media.push(photo)
+    }else if (element.message.photo[1]) {
+        media.push(element.message.photo[1])
         startDocProcessing();
     }
 })
 
-async function startDocProcessing () {
+function startDocProcessing () {
     const data = media.map(async doc => upload(doc))
     const data2 = media.map(async vid => upload2(vid))
     const data3 = media.map(async phot => upload3(phot))
