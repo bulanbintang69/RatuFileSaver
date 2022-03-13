@@ -1192,6 +1192,9 @@ bot.on(['document', 'video', 'photo'], ctx => {
     const { document } = ctx
     const { video } = ctx
     const { photo } = ctx
+    console.log(document);
+    console.log(video);
+    console.log(photo);
     if (document) {
         media.push(document)
         startDocProcessing(ctx);
