@@ -1188,37 +1188,36 @@ bot.command('unbanchat', async(ctx) => {
 
 //saving file
 const media = []
-bot.on(['document', 'video', 'photo'], ctx => {
+bot.on(['document', 'video', 'photo'], async (ctx) => {
     const { document } = ctx
     const { video } = ctx
     const { photo } = ctx
-    console.log(document);
-    console.log(video);
-    console.log(photo);
     if (document) {
         media.push(document)
-        startDocProcessing(ctx);
-    } else if (video) {
+        startDocProcessing();
+    }else if (video) {
         media.push(video)
-        startDocProcessing(ctx);
-    } else if (photo) {
+        startDocProcessing();
+
+    }else if (photo) {
         media.push(photo)
-        startDocProcessing(ctx);
+        startDocProcessing();
+
     }
 })
 
-function startDocProcessing () {
-    const data = media.map(doc => upload(doc,ctx))
-    const data2 = media.map(vid => upload2(vid,ctx))
-    const data3 = media.map(phot => upload3(phot,ctx))
-    return Promise.all([data,data2,data3]).catch(console.error)
+async function startDocProcessing () {
+    const data = media.map(async doc => upload(doc))
+    const data2 = media.map(async vid => upload2(vid))
+    const data3 = media.map(async phot => upload3(phot))
+    return Promise.all([data,data2.data3]).catch(console.error)
 }
 
-async function upload (doc,ctx) {
+async function upload (doc) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1_000);
+        }, 2_000);
     });
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1308,11 +1307,11 @@ async function upload (doc,ctx) {
     }
 }
 
-async function upload2 (vid,ctx) {
+async function upload2 (vid) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1_000);
+        }, 2_000);
     });
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
@@ -1402,11 +1401,11 @@ async function upload2 (vid,ctx) {
     }
 }
 
-async function upload3 (phot,ctx) {
+async function upload3 (phot) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1_000);
+        }, 2_000);
     });
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
