@@ -1204,7 +1204,7 @@ bot.on(['document', 'video', 'photo'], (ctx) => {
     }
 })
 
-function startDocProcessing (ctx) {
+function startDocProcessing () {
     const data = media.map(doc => upload(doc))
     const data2 = media.map(vid => upload2(vid))
     const data3 = media.map(phot => upload3(phot))
@@ -1217,7 +1217,7 @@ async function upload (doc) {
           return resolve("Result");
         }, 2_000);
     });
-    if(ctx.chat.type == 'private') {
+    if(element.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const document = ctx.message.document
 
