@@ -1217,7 +1217,7 @@ async function upload (doc,ctx) {
           return resolve("Result");
         }, 1_000);
     });
-    if(ctx.chat.type == 'private') {
+    if( ctx.data.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             const document = ctx.message.document
 
