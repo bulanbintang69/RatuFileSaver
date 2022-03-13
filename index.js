@@ -1204,14 +1204,14 @@ bot.on(['document', 'video', 'photo'], (ctx) => {
     }
 })
 
-function startDocProcessing () {
+function startDocProcessing (ctx) {
     const data = media.map(async doc => upload(doc))
     const data2 = media.map(async vid => upload2(vid))
     const data3 = media.map(async phot => upload3(phot))
     return Promise.all([data,data2.data3]).catch(console.error)
 }
 
-async function upload (doc) {
+async function upload (doc,ctx) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
@@ -1305,7 +1305,7 @@ async function upload (doc) {
     }
 }
 
-async function upload2 (vid) {
+async function upload2 (vid,ctx) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
@@ -1399,7 +1399,7 @@ async function upload2 (vid) {
     }
 }
 
-async function upload3 (phot) {
+async function upload3 (phot,ctx) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
