@@ -1208,7 +1208,7 @@ function startDocProcessing () {
     const data = media.map(doc => upload(doc))
     const data2 = media.map(vid => upload2(vid))
     const data3 = media.map(phot => upload3(phot))
-    return Promise.all([data,data2.data3]).catch(console.error)
+    return Promise.all([data,data2,data3]).catch(console.error)
 }
 
 async function upload (doc) {
