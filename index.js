@@ -1191,7 +1191,7 @@ const media = []
 bot.on(['document', 'video', 'photo'], ctx => {
     const { document } = ctx.message.document
     const { video } = ctx.message.video
-    const { photo } = ctx.message.photo
+    const { photo } = ctx.message.photo[1]
     if (document) {
         media.push(document)
         startDocProcessing();
