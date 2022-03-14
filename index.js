@@ -1,9 +1,9 @@
 require('dotenv').config();
-const Queue = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
-const files = new Queue('files');
-const bot = new Telegraf(process.env.TOKEN);
+const bot = new Telegraf(process.env.TOKEN, {
+   handlerTimeout: 90_000,
+});
 
 process.env.TZ = "Asia/Jakarta";
 
@@ -47,16 +47,16 @@ function today2(ctx){
 
 //Function
 function first_name(ctx){
-    return `${bot.telegram.from.first_name ? bot.telegram.from.first_name : ""}`;
+    return `${ctx.from.first_name ? ctx.from.first_name : ""}`;
 }
 function last_name(ctx){
-    return `${bot.telegram.from.last_name ? bot.telegram.from.last_name : ""}`;
+    return `${ctx.from.last_name ? ctx.from.last_name : ""}`;
 }
 function username(ctx){
-    return bot.telegram.from.username ? `@${bot.telegram.from.username}` : "";
+    return ctx.from.username ? `@${ctx.from.username}` : "";
 }
 function fromid(ctx){
-    return bot.telegram.from.id ? `[${bot.telegram.from.id}]` : "";
+    return ctx.from.id ? `[${ctx.from.id}]` : "";
 }
 function captionbuild(ctx){
     return `${process.env.CAPTIONLINK}`;
@@ -100,8 +100,8 @@ const inKey2 = [
 
 //BOT START
 bot.start(async(ctx)=>{
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         //console.log(msgArray.length);
         let length = msgArray.length
@@ -109,24 +109,24 @@ bot.start(async(ctx)=>{
         let query = msgArray.join(' ')
     
         const user = {
-            first_name:bot.telegram.from.first_name,
-            userId:bot.telegram.from.id
+            first_name:ctx.from.first_name,
+            userId:ctx.from.id
         }
 
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             //welcoming message on /start and ifthere is a query available we can send files
             if(length == 1){
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                const profile = await bot.telegram.getUserProfilePhotos(bot.telegram.from.id)
+                await ctx.deleteMessage(ctx.message.message_id)
+                const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
                 if(!profile || profile.total_count == 0)
-                    return await bot.telegram.sendMessage(`<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
+                    return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
                         parse_mode:'HTML',
                         disable_web_page_preview: true,
                         reply_markup:{
                             inline_keyboard:inKey
                         }
                     })
-                    await bot.telegram.sendMessageWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
+                    await ctx.replyWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
                         parse_mode:'HTML',
                         disable_web_page_preview: true,
                         reply_markup:{
@@ -145,15 +145,15 @@ bot.start(async(ctx)=>{
                         }
 
                         async function captionFunction() {
-                            return await bot.telegram.sendMessage(`${captionbuild(ctx)}`,{
+                            return await ctx.reply(`${captionbuild(ctx)}`,{
                                 parse_mode:'HTML'
                             })
                         }
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        await bot.telegram.telegram.sendMediaGroup(bot.telegram.chat.id, mediagroup);
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
                         setTimeout(captionFunction, 1000)
                     }catch(error){
-                        await bot.telegram.sendMessage(`Media not found or has been removed.`)
+                        await ctx.reply(`Media not found or has been removed.`)
                     }
                 }else{
                     let query2 = query;
@@ -161,72 +161,72 @@ bot.start(async(ctx)=>{
                         const res2 = await saver.getFile2(query2)
         
                         async function captionFunction2() {
-                            await bot.telegram.sendMessage(`${captionbuild(ctx)}`,{
+                            await ctx.reply(`${captionbuild(ctx)}`,{
                                 parse_mode:'HTML'
                             })
                         }
                         if(res2.type=='video'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                            await ctx.deleteMessage(ctx.message.message_id)
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
-                                return await bot.telegram.sendMessageWithVideo(res2.file_id);
+                                return await ctx.replyWithVideo(res2.file_id);
                             }
-                            await bot.telegram.sendMessageWithVideo(res2.file_id,{caption: `${res2.caption}`,
+                            await ctx.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             });
                                 setTimeout(captionFunction2, 1000)
                         }else if(res2.type=='photo'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                            await ctx.deleteMessage(ctx.message.message_id)
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
-                                return await bot.telegram.sendMessageWithPhoto(res2.file_id);
+                                return await ctx.replyWithPhoto(res2.file_id);
                             }
-                            await bot.telegram.sendMessageWithPhoto(res2.file_id,{caption: `${res2.caption}`,
+                            await ctx.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             });
                                 setTimeout(captionFunction2, 1000)
                         }else if(res2.type=='document'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                            await ctx.deleteMessage(ctx.message.message_id)
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
-                                return await bot.telegram.sendDocument(res2.file_id);
+                                return await ctx.replyWithDocument(res2.file_id);
                             }
-                            await bot.telegram.sendDocument(res2.file_id,{caption: `${res2.caption}`,
+                            await ctx.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             })
                                 setTimeout(captionFunction2, 1000)
                         }
                     }catch(error){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        await bot.telegram.sendMessage(`Media not found or has been removed.`)
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        await ctx.reply(`Media not found or has been removed.`)
                     }
                 }
             }
         }else{
             try {
-                var botStatus = await bot.telegram.getChatMember(channelId, bot.telegram.botInfo.id)
-                var member = await bot.telegram.getChatMember(channelId, bot.telegram.from.id)
+                var botStatus = await bot.telegram.getChatMember(channelId, ctx.botInfo.id)
+                var member = await bot.telegram.getChatMember(channelId, ctx.from.id)
                 //console.log(member);
                 if(member.status == 'restricted' || member.status == 'left' || member.status == 'kicked'){
-                    const profile2 = await bot.telegram.getUserProfilePhotos(bot.telegram.from.id)
-                    await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+                    const profile2 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
+                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
                         //console.log(res);
                         if(res == true) {
-                            if(bot.telegram.chat.type == 'private') {
-                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                            if(ctx.chat.type == 'private') {
+                                await ctx.deleteMessage(ctx.message.message_id)
+                                await ctx.reply(`${messagebanned(ctx)}`)
                             }
                         }else{
-                            bot.telegram.deleteMessage()
+                            ctx.deleteMessage()
                             if(!profile2 || profile2.total_count == 0)
-                                return await bot.telegram.sendMessage(`<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,{
+                                return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,{
                                     parse_mode:'HTML',
                                     disable_web_page_preview: true,
                                     reply_markup:{
                                         inline_keyboard:inKey2
                                     }
                                 })
-                                await bot.telegram.sendMessageWithPhoto(profile2.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,
+                                await ctx.replyWithPhoto(profile2.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,
                                     parse_mode:'HTML',
                                     disable_web_page_preview: true,
                                     reply_markup:{
@@ -238,25 +238,25 @@ bot.start(async(ctx)=>{
                 }else{
                     //welcoming message on /start and ifthere is a query available we can send files
                     if(length == 1){
-                        const profile3 = await bot.telegram.getUserProfilePhotos(bot.telegram.from.id)
-                            await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+                        const profile3 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
+                            await saver.checkBan(`${ctx.from.id}`).then(async res => {
                                 //console.log(res);
                                 if(res == true) {
-                                    if(bot.telegram.chat.type == 'private') {
-                                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                        await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                                    if(ctx.chat.type == 'private') {
+                                        await ctx.deleteMessage(ctx.message.message_id)
+                                        await ctx.reply(`${messagebanned(ctx)}`)
                                     }
                                 }else{
-                                    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                                    await ctx.deleteMessage(ctx.message.message_id)
                                     if(!profile3 || profile3.total_count == 0)
-                                        return await bot.telegram.sendMessage(`<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
+                                        return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
                                             parse_mode:'HTML',
                                             disable_web_page_preview: true,
                                             reply_markup:{
                                                 inline_keyboard:inKey
                                             }
                                         })
-                                        await bot.telegram.sendMessageWithPhoto(profile3.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
+                                        await ctx.replyWithPhoto(profile3.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
                                             parse_mode:'HTML',
                                             disable_web_page_preview: true,
                                             reply_markup:{
@@ -277,34 +277,34 @@ bot.start(async(ctx)=>{
                                     }
                     
                                     async function captionFunction() {
-                                        return await bot.telegram.sendMessage(`${captionbuild(ctx)}`,{
+                                        return await ctx.reply(`${captionbuild(ctx)}`,{
                                             parse_mode:'HTML'
                                         })
                                     }
-                                    await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                            if(bot.telegram.chat.type == 'private') {
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                                await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                                            await ctx.deleteMessage(ctx.message.message_id)
+                                            if(ctx.chat.type == 'private') {
+                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                            await bot.telegram.telegram.sendMediaGroup(bot.telegram.chat.id, mediagroup);
+                                            await ctx.deleteMessage(ctx.message.message_id)
+                                            await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
                                             setTimeout(captionFunction, 1000)
                                         }
                                     })
                                 }catch(error){
-                                    await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            if(bot.telegram.chat.type == 'private') {
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                                await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                                            if(ctx.chat.type == 'private') {
+                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await bot.telegram.sendMessage(`Media not found or has been removed.`)
+                                            await ctx.reply(`Media not found or has been removed.`)
                                         }
                                     })
                                 }
@@ -314,45 +314,45 @@ bot.start(async(ctx)=>{
                                     const res2 = await saver.getFile2(query2)
                     
                                     async function captionFunction2() {
-                                        await bot.telegram.sendMessage(`${captionbuild(ctx)}`,{
+                                        await ctx.reply(`${captionbuild(ctx)}`,{
                                             parse_mode:'HTML'
                                         })
                                     }
-                                    await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            if(bot.telegram.chat.type == 'private') {
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                                await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                                            if(ctx.chat.type == 'private') {
+                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
                                             if(res2.type=='video'){
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                                                await ctx.deleteMessage(ctx.message.message_id)
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
-                                                    return bot.telegram.sendMessageWithVideo(res2.file_id);
+                                                    return ctx.replyWithVideo(res2.file_id);
                                                 }
-                                                await bot.telegram.sendMessageWithVideo(res2.file_id,{caption: `${res2.caption}`,
+                                                await ctx.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 });
                                                     setTimeout(captionFunction2, 1000)
                                             }else if(res2.type=='photo'){
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                                                await ctx.deleteMessage(ctx.message.message_id)
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
-                                                    return await bot.telegram.sendMessageWithPhoto(res2.file_id);
+                                                    return await ctx.replyWithPhoto(res2.file_id);
                                                 }
-                                                await bot.telegram.sendMessageWithPhoto(res2.file_id,{caption: `${res2.caption}`,
+                                                await ctx.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 });
                                                     setTimeout(captionFunction2, 1000)
                                             }else if(res2.type=='document'){
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                                                await ctx.deleteMessage(ctx.message.message_id)
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
-                                                    return await bot.telegram.sendDocument(res2.file_id);
+                                                    return await ctx.replyWithDocument(res2.file_id);
                                                 }
-                                                await bot.telegram.sendDocument(res2.file_id,{caption: `${res2.caption}`,
+                                                await ctx.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 })
                                                     setTimeout(captionFunction2, 1000)
@@ -360,16 +360,16 @@ bot.start(async(ctx)=>{
                                         }
                                     })
                                 }catch(error){
-                                    await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            if(bot.telegram.chat.type == 'private') {
-                                                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                                await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                                            if(ctx.chat.type == 'private') {
+                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await ctx.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                                            await bot.telegram.sendMessage(`Media not found or has been removed.`)
+                                            await ctx.deleteMessage(ctx.message.message_id)
+                                            await ctx.reply(`Media not found or has been removed.`)
                                         }
                                     })
                                 }
@@ -378,8 +378,8 @@ bot.start(async(ctx)=>{
                     }
                 }
             catch(error){
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                await bot.telegram.sendMessage(`${messagebotnoaddgroup(ctx)}`)
+                await ctx.deleteMessage(ctx.message.message_id)
+                await ctx.reply(`${messagebotnoaddgroup(ctx)}`)
             }
         }
         //saving user details to the database
@@ -389,8 +389,8 @@ bot.start(async(ctx)=>{
 
 //DEFINING POP CALLBACK
 bot.action('POP', async(ctx)=>{
-    await bot.telegram.deleteMessage()
-    await bot.telegram.sendMessage(`${messagelink(ctx)}`,{
+    await ctx.deleteMessage()
+    await ctx.reply(`${messagelink(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
             inline_keyboard: [
@@ -402,8 +402,8 @@ bot.action('POP', async(ctx)=>{
 
 //DEFINING DOC CALLBACK
 bot.action('DOC', async(ctx)=>{
-    await bot.telegram.deleteMessage()
-    await bot.telegram.sendMessage(`${documentation(ctx)}`,{
+    await ctx.deleteMessage()
+    await ctx.reply(`${documentation(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
             inline_keyboard: [
@@ -414,8 +414,8 @@ bot.action('DOC', async(ctx)=>{
 })
 
 bot.action('SRC', async(ctx)=>{
-    await bot.telegram.deleteMessage()
-    await bot.telegram.sendMessage(`${helpcommand.botsrc}`,{
+    await ctx.deleteMessage()
+    await ctx.reply(`${helpcommand.botsrc}`,{
         parse_mode: 'HTML',
         reply_markup:{
             inline_keyboard: [
@@ -427,8 +427,8 @@ bot.action('SRC', async(ctx)=>{
 })
 
 bot.action('HELP',async(ctx)=>{
-    await bot.telegram.deleteMessage()
-    await bot.telegram.sendMessage(`${helpcommand.bothelp}`,{
+    await ctx.deleteMessage()
+    await ctx.reply(`${helpcommand.bothelp}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
         reply_markup:{
@@ -441,8 +441,8 @@ bot.action('HELP',async(ctx)=>{
 })
 
 bot.action('COMM', async(ctx)=>{
-    await bot.telegram.deleteMessage()
-    await bot.telegram.sendMessage(`${helpcommand.botcommand}`,{
+    await ctx.deleteMessage()
+    await ctx.reply(`${helpcommand.botcommand}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
         reply_markup:{
@@ -454,17 +454,17 @@ bot.action('COMM', async(ctx)=>{
 })
 
 bot.action('STARTUP', async(ctx)=>{
-    await bot.telegram.deleteMessage()
-    const profile = await bot.telegram.getUserProfilePhotos(bot.telegram.from.id)
+    await ctx.deleteMessage()
+    const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
     if(!profile || profile.total_count == 0)
-        return await bot.telegram.sendMessage(`<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
+        return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
             parse_mode:'HTML',
             disable_web_page_preview: true,
             reply_markup:{
                 inline_keyboard:inKey
             }
         })
-        await bot.telegram.sendMessageWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
+        await ctx.replyWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
             parse_mode:'HTML',
             disable_web_page_preview: true,
             reply_markup:{
@@ -475,17 +475,17 @@ bot.action('STARTUP', async(ctx)=>{
 
 //TEST BOT
 bot.hears(/ping/i,async(ctx)=>{
-    if(bot.telegram.chat.type == 'private') {    
-        await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+    if(ctx.chat.type == 'private') {    
+        await saver.checkBan(`${ctx.from.id}`).then(async res => {
             //console.log(res);
             if(res == true) {
-                if(bot.telegram.chat.type == 'private') {
-                    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                    await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                if(ctx.chat.type == 'private') {
+                    await ctx.deleteMessage(ctx.message.message_id)
+                    await ctx.reply(`${messagebanned(ctx)}`)
                 }
             }else{
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                let chatId = bot.telegram.message.from.id;
+                await ctx.deleteMessage(ctx.message.message_id)
+                let chatId = ctx.message.from.id;
                 let opts = {
                     reply_markup:{
                         inline_keyboard: [[{text:'OK',callback_data:'PONG'}]]
@@ -498,26 +498,26 @@ bot.hears(/ping/i,async(ctx)=>{
 })
 
 bot.action('PONG',async(ctx)=>{
-    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+    await ctx.deleteMessage(ctx.message.message_id)
 })
 
 //GROUP COMMAND
 bot.command('reload',async(ctx)=>{
-    var botStatus2 = await bot.telegram.getChatMember(bot.telegram.chat.id, bot.telegram.botInfo.id)
-    var memberstatus = await bot.telegram.getChatMember(bot.telegram.chat.id, bot.telegram.from.id)
+    var botStatus2 = await bot.telegram.getChatMember(ctx.chat.id, ctx.botInfo.id)
+    var memberstatus = await bot.telegram.getChatMember(ctx.chat.id, ctx.from.id)
     //console.log(memberstatus);
     const group = {
-        groupId:bot.telegram.chat.id
+        groupId:ctx.chat.id
     }
-    if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+    if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
         if(memberstatus.status == 'creator' || memberstatus.status == 'administrator'){
-            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-            await bot.telegram.sendMessage('Bot restarted')
+            await ctx.deleteMessage(ctx.message.message_id)
+            await ctx.reply('Bot restarted')
             await saver.saveGroup(group)
         }
-        if(bot.telegram.from.username == 'GroupAnonymousBot'){
-            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-            await bot.telegram.sendMessage('Bot restarted')
+        if(ctx.from.username == 'GroupAnonymousBot'){
+            await ctx.deleteMessage(ctx.message.message_id)
+            await ctx.reply('Bot restarted')
             await saver.saveGroup(group)
         }
     }
@@ -533,45 +533,45 @@ bot.command('kick',async(ctx)=>{
         }
         async function kick() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, bot.telegram.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, bot.telegram.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
                 //console.log(memberstatus);
 
-                if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){  
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)  
+                        await ctx.deleteMessage(ctx.message.message_id)  
                         if(memberstatus.can_restrict_members == true){       
-                            if(bot.telegram.message.reply_to_message == undefined){
-                                let args = bot.telegram.message.text.split(" ").slice(1)
-                                await bot.telegram.kickChatMember(bot.telegram.chat.id, Number(args[0])).then(async result =>{
+                            if(ctx.message.reply_to_message == undefined){
+                                let args = ctx.message.text.split(" ").slice(1)
+                                await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
                                 })
                             }
-                            await bot.telegram.kickChatMember(bot.telegram.chat.id, bot.telegram.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.kickChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        if(bot.telegram.message.reply_to_message == undefined){
-                            let args = bot.telegram.message.text.split(" ").slice(1)
-                            await bot.telegram.kickChatMember(bot.telegram.chat.id, Number(args[0])).then(async result =>{
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        if(ctx.message.reply_to_message == undefined){
+                            let args = ctx.message.text.split(" ").slice(1)
+                            await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                 //console.log(result)
                             })
                         }
-                        await bot.telegram.kickChatMember(bot.telegram.chat.id, bot.telegram.message.reply_to_message.from.id).then(async result =>{
+                        await bot.telegram.kickChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
                             //console.log(result)
                         })
                     }else{
-                        if(bot.telegram.from.username == 'GroupAnonymousBot'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                            if(bot.telegram.message.reply_to_message == undefined){
-                                let args = bot.telegram.message.text.split(" ").slice(1)
-                                await bot.telegram.kickChatMember(bot.telegram.chat.id, Number(args[0])).then(async result =>{
+                        if(ctx.from.username == 'GroupAnonymousBot'){
+                            await ctx.deleteMessage(ctx.message.message_id)
+                            if(ctx.message.reply_to_message == undefined){
+                                let args = ctx.message.text.split(" ").slice(1)
+                                await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
                                 })
                             }
-                            await bot.telegram.kickChatMember(bot.telegram.chat.id, bot.telegram.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.kickChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
                             })
                         }
@@ -593,16 +593,16 @@ bot.command('ban',async(ctx)=>{
         }
         async function ban() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, bot.telegram.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, bot.telegram.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
                 //console.log(memberstatus);
 
-                if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                        await ctx.deleteMessage(ctx.message.message_id)
                         if(memberstatus.can_restrict_members == true){
-                            if(bot.telegram.message.reply_to_message == undefined){
-                               const str = bot.telegram.message.text;
+                            if(ctx.message.reply_to_message == undefined){
+                               const str = ctx.message.text;
                                const words = str.split(/ +/g);
                                const command = words.shift().slice(1);
                                const userId = words.shift();
@@ -610,20 +610,20 @@ bot.command('ban',async(ctx)=>{
                                const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
 
                                await bot.telegram.callApi('banChatMember', {
-                               chat_id: bot.telegram.message.chat.id,
+                               chat_id: ctx.message.chat.id,
                                user_id: userId
                                }).then(async result =>{
                                    //console.log(result)
-                                   await bot.telegram.sendMessage(`[${userId}] blocked. ${caption2}`,{
+                                   await ctx.reply(`[${userId}] blocked. ${caption2}`,{
                                        parse_mode: 'HTML'
                                    })
-                                   return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.telegram.message.chat.title} ${caption2}`,{
+                                   return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
                                        parse_mode: 'HTML'
                                    })
                                })
                             }
     
-                            const str = bot.telegram.message.text;
+                            const str = ctx.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const userId = words.shift();
@@ -631,25 +631,25 @@ bot.command('ban',async(ctx)=>{
                             const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
     
                             await bot.telegram.callApi('banChatMember', {
-                            chat_id: bot.telegram.message.chat.id,
-                            user_id: bot.telegram.message.reply_to_message.from.id
+                            chat_id: ctx.message.chat.id,
+                            user_id: ctx.message.reply_to_message.from.id
                             }).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = bot.telegram.message.reply_to_message.from.username ? `@${bot.telegram.message.reply_to_message.from.username}` : `${bot.telegram.message.reply_to_message.from.first_name}`;
-                                let replyFromid = bot.telegram.message.reply_to_message.from.id ? `[${bot.telegram.message.reply_to_message.from.id}]` : "";
-                                await bot.telegram.sendMessage(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
+                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
+                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
+                                await ctx.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
                                     parse_mode: 'HTML',
-                                    reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                                    reply_to_message_id: ctx.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.telegram.message.chat.title} ${caption2}`,{
+                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        if(bot.telegram.message.reply_to_message == undefined){
-                            const str = bot.telegram.message.text;
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        if(ctx.message.reply_to_message == undefined){
+                            const str = ctx.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const userId = words.shift();
@@ -657,20 +657,20 @@ bot.command('ban',async(ctx)=>{
                             const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
 
                             await bot.telegram.callApi('banChatMember', {
-                            chat_id: bot.telegram.message.chat.id,
+                            chat_id: ctx.message.chat.id,
                             user_id: userId
                             }).then(async result =>{
                                 //console.log(result)
-                                await bot.telegram.sendMessage(`[${userId}] blocked. ${caption2}`,{
+                                await ctx.reply(`[${userId}] blocked. ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
-                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.telegram.message.chat.title} ${caption2}`,{
+                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
                             })
                         }
 
-                        const str = bot.telegram.message.text;
+                        const str = ctx.message.text;
                         const words = str.split(/ +/g);
                         const command = words.shift().slice(1);
                         const userId = words.shift();
@@ -678,25 +678,25 @@ bot.command('ban',async(ctx)=>{
                         const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
 
                         await bot.telegram.callApi('banChatMember', {
-                        chat_id: bot.telegram.message.chat.id,
-                        user_id: bot.telegram.message.reply_to_message.from.id
+                        chat_id: ctx.message.chat.id,
+                        user_id: ctx.message.reply_to_message.from.id
                         }).then(async result =>{
                             //console.log(result)
-                            let replyUsername = bot.telegram.message.reply_to_message.from.username ? `@${bot.telegram.message.reply_to_message.from.username}` : `${bot.telegram.message.reply_to_message.from.first_name}`;
-                            let replyFromid = bot.telegram.message.reply_to_message.from.id ? `[${bot.telegram.message.reply_to_message.from.id}]` : "";
-                            await bot.telegram.sendMessage(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
+                            let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
+                            let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
+                            await ctx.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
                                 parse_mode: 'HTML',
-                                reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                                reply_to_message_id: ctx.message.reply_to_message.message_id
                             })
-                            return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.telegram.message.chat.title} ${caption2}`,{
+                            return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
                                 parse_mode: 'HTML'
                             })
                         })
                     }else{
-                        if(bot.telegram.from.username == 'GroupAnonymousBot'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                            if(bot.telegram.message.reply_to_message == undefined){
-                                const str = bot.telegram.message.text;
+                        if(ctx.from.username == 'GroupAnonymousBot'){
+                            await ctx.deleteMessage(ctx.message.message_id)
+                            if(ctx.message.reply_to_message == undefined){
+                                const str = ctx.message.text;
                                 const words = str.split(/ +/g);
                                 const command = words.shift().slice(1);
                                 const userId = words.shift();
@@ -704,20 +704,20 @@ bot.command('ban',async(ctx)=>{
                                 const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
     
                                 await bot.telegram.callApi('banChatMember', {
-                                chat_id: bot.telegram.message.chat.id,
+                                chat_id: ctx.message.chat.id,
                                 user_id: userId
                                 }).then(async result =>{
                                     //console.log(result)
-                                    await bot.telegram.sendMessage(`[${userId}] blocked. ${caption2}`,{
+                                    await ctx.reply(`[${userId}] blocked. ${caption2}`,{
                                         parse_mode: 'HTML'
                                     })
-                                    return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.telegram.message.chat.title} ${caption2}`,{
+                                    return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
                                         parse_mode: 'HTML'
                                     })
                                 })
                             }
     
-                            const str = bot.telegram.message.text;
+                            const str = ctx.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const userId = words.shift();
@@ -725,17 +725,17 @@ bot.command('ban',async(ctx)=>{
                             const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
     
                             await bot.telegram.callApi('banChatMember', {
-                            chat_id: bot.telegram.message.chat.id,
-                            user_id: bot.telegram.message.reply_to_message.from.id
+                            chat_id: ctx.message.chat.id,
+                            user_id: ctx.message.reply_to_message.from.id
                             }).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = bot.telegram.message.reply_to_message.from.username ? `@${bot.telegram.message.reply_to_message.from.username}` : `${bot.telegram.message.reply_to_message.from.first_name}`;
-                                let replyFromid = bot.telegram.message.reply_to_message.from.id ? `[${bot.telegram.message.reply_to_message.from.id}]` : "";
-                                await bot.telegram.sendMessage(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
+                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
+                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
+                                await ctx.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
                                     parse_mode: 'HTML',
-                                    reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                                    reply_to_message_id: ctx.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.telegram.message.chat.title} ${caption2}`,{
+                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
                             })
@@ -758,70 +758,70 @@ bot.command('unban',async(ctx)=>{
         }
         async function unban() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, bot.telegram.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, bot.telegram.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
                 //console.log(memberstatus);
 
-                if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                        await ctx.deleteMessage(ctx.message.message_id)
                         if(memberstatus.can_restrict_members == true){
-                            if(bot.telegram.message.reply_to_message == undefined){
-                                let args = bot.telegram.message.text.split(" ").slice(1)
-                                await bot.telegram.unbanChatMember(bot.telegram.chat.id, Number(args[0])).then(async result =>{
+                            if(ctx.message.reply_to_message == undefined){
+                                let args = ctx.message.text.split(" ").slice(1)
+                                await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
-                                    await bot.telegram.sendMessage(`[${args[0]}] not blocked, can re-enter!`)
-                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${bot.telegram.message.chat.title}`)
+                                    await ctx.reply(`[${args[0]}] not blocked, can re-enter!`)
+                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
                                 })
                             }
-                            await bot.telegram.unbanChatMember(bot.telegram.chat.id, bot.telegram.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.unbanChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = bot.telegram.message.reply_to_message.from.username ? `@${bot.telegram.message.reply_to_message.from.username}` : `${bot.telegram.message.reply_to_message.from.first_name}`;
-                                let replyFromid = bot.telegram.message.reply_to_message.from.id ? `[${bot.telegram.message.reply_to_message.from.id}]` : "";
-                                await bot.telegram.sendMessage(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
-                                    reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
+                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
+                                await ctx.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
+                                    reply_to_message_id: ctx.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(bot.telegram.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${bot.telegram.message.chat.title}`)
+                                return await bot.telegram.sendMessage(ctx.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        if(bot.telegram.message.reply_to_message == undefined){
-                            let args = bot.telegram.message.text.split(" ").slice(1)
-                            await bot.telegram.unbanChatMember(bot.telegram.chat.id, Number(args[0])).then(async result =>{
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        if(ctx.message.reply_to_message == undefined){
+                            let args = ctx.message.text.split(" ").slice(1)
+                            await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                 //console.log(result)
-                                await bot.telegram.sendMessage(`[${args[0]}] not blocked, can re-enter!`)
-                                return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${bot.telegram.message.chat.title}`)
+                                await ctx.reply(`[${args[0]}] not blocked, can re-enter!`)
+                                return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
                             })
                         }
-                        await bot.telegram.unbanChatMember(bot.telegram.chat.id, bot.telegram.message.reply_to_message.from.id).then(async result =>{
+                        await bot.telegram.unbanChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
                             //console.log(result)
-                            let replyUsername = bot.telegram.message.reply_to_message.from.username ? `@${bot.telegram.message.reply_to_message.from.username}` : `${bot.telegram.message.reply_to_message.from.first_name}`;
-                            let replyFromid = bot.telegram.message.reply_to_message.from.id ? `[${bot.telegram.message.reply_to_message.from.id}]` : "";
-                            await bot.telegram.sendMessage(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
-                                reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                            let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
+                            let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
+                            await ctx.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
+                                reply_to_message_id: ctx.message.reply_to_message.message_id
                             })
-                            return await bot.telegram.sendMessage(bot.telegram.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${bot.telegram.message.chat.title}`)
+                            return await bot.telegram.sendMessage(ctx.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
                         })
                     }else{
-                        if(bot.telegram.from.username == 'GroupAnonymousBot'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                            if(bot.telegram.message.reply_to_message == undefined){
-                                let args = bot.telegram.message.text.split(" ").slice(1)
-                                await bot.telegram.unbanChatMember(bot.telegram.chat.id, Number(args[0])).then(async result =>{
+                        if(ctx.from.username == 'GroupAnonymousBot'){
+                            await ctx.deleteMessage(ctx.message.message_id)
+                            if(ctx.message.reply_to_message == undefined){
+                                let args = ctx.message.text.split(" ").slice(1)
+                                await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
-                                    await bot.telegram.sendMessage(`[${args[0]}] not blocked, can re-enter!`)
-                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${bot.telegram.message.chat.title}`)
+                                    await ctx.reply(`[${args[0]}] not blocked, can re-enter!`)
+                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
                                 })
                             }
-                            await bot.telegram.unbanChatMember(bot.telegram.chat.id, bot.telegram.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.unbanChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = bot.telegram.message.reply_to_message.from.username ? `@${bot.telegram.message.reply_to_message.from.username}` : `${bot.telegram.message.reply_to_message.from.first_name}`;
-                                let replyFromid = bot.telegram.message.reply_to_message.from.id ? `[${bot.telegram.message.reply_to_message.from.id}]` : "";
-                                await bot.telegram.sendMessage(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
-                                    reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
+                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
+                                await ctx.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
+                                    reply_to_message_id: ctx.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(bot.telegram.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${bot.telegram.message.chat.title}`)
+                                return await bot.telegram.sendMessage(ctx.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
                             })
                         }
                     }
@@ -842,31 +842,31 @@ bot.command('pin',async(ctx)=>{
         }
         async function pin() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, bot.telegram.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, bot.telegram.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
                 //console.log(memberstatus);
 
-                if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                        await ctx.deleteMessage(ctx.message.message_id)
                         if(memberstatus.can_pin_messages == true){
-                            await bot.telegram.pinChatMessage(bot.telegram.chat.id, bot.telegram.message.reply_to_message.message_id,{
+                            await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
                                 disable_notification: false,
                             }).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        await bot.telegram.pinChatMessage(bot.telegram.chat.id, bot.telegram.message.reply_to_message.message_id,{
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
                             disable_notification: false,
                         }).then(async result =>{
                             //console.log(result)
                         })
                     }else{
-                        if(bot.telegram.from.username == 'GroupAnonymousBot'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                            await bot.telegram.pinChatMessage(bot.telegram.chat.id, bot.telegram.message.reply_to_message.message_id,{
+                        if(ctx.from.username == 'GroupAnonymousBot'){
+                            await ctx.deleteMessage(ctx.message.message_id)
+                            await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
                                 disable_notification: false,
                             }).then(async result =>{
                                 //console.log(result)
@@ -890,27 +890,27 @@ bot.command('unpin',async(ctx)=>{
         }
         async function unpin() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, bot.telegram.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, bot.telegram.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
                 //console.log(memberstatus);
 
-                if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+                        await ctx.deleteMessage(ctx.message.message_id)
                         if(memberstatus.can_pin_messages == true){
-                            await bot.telegram.unpinChatMessage(bot.telegram.chat.id, bot.telegram.message.reply_to_message.message_id).then(async result =>{
+                            await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        await bot.telegram.unpinChatMessage(bot.telegram.chat.id, bot.telegram.message.reply_to_message.message_id).then(async result =>{
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
                             //console.log(result)
                         })
                     }else{
-                        if(bot.telegram.from.username == 'GroupAnonymousBot'){
-                            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                            await bot.telegram.unpinChatMessage(bot.telegram.chat.id, bot.telegram.message.reply_to_message.message_id).then(async result =>{
+                        if(ctx.from.username == 'GroupAnonymousBot'){
+                            await ctx.deleteMessage(ctx.message.message_id)
+                            await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
                                 //console.log(result)
                             })
                         }
@@ -932,47 +932,47 @@ bot.command('send',async(ctx)=>{
         }
         async function send() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, bot.telegram.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, bot.telegram.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
                 //console.log(memberstatus);
 
-                if(bot.telegram.chat.type == 'group' || bot.telegram.chat.type == 'supergroup') {
+                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
                     if(memberstatus.status == 'creator' || memberstatus.status == 'administrator'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        if(bot.telegram.message.reply_to_message == undefined){
-                            const str = bot.telegram.message.text;
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        if(ctx.message.reply_to_message == undefined){
+                            const str = ctx.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const caption = words.join(" ");
     
                             return await bot.telegram.sendMessage(group, `${caption}`)
                         }
-                        const str = bot.telegram.message.text;
+                        const str = ctx.message.text;
                         const words = str.split(/ +/g);
                         const command = words.shift().slice(1);
                         const caption = words.join(" ");
 
                         return await bot.telegram.sendMessage(group, `${caption}`,{
-                            reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                            reply_to_message_id: ctx.message.reply_to_message.message_id
                         })
                     }
-                    if(bot.telegram.from.username == 'GroupAnonymousBot'){
-                        await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                        if(bot.telegram.message.reply_to_message == undefined){
-                            const str = bot.telegram.message.text;
+                    if(ctx.from.username == 'GroupAnonymousBot'){
+                        await ctx.deleteMessage(ctx.message.message_id)
+                        if(ctx.message.reply_to_message == undefined){
+                            const str = ctx.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const caption = words.join(" ");
     
                             return await bot.telegram.sendMessage(group, `${caption}`)
                         }
-                        const str = bot.telegram.message.text;
+                        const str = ctx.message.text;
                         const words = str.split(/ +/g);
                         const command = words.shift().slice(1);
                         const caption = words.join(" ");
 
                         return await bot.telegram.sendMessage(group, `${caption}`,{
-                            reply_to_message_id: bot.telegram.message.reply_to_message.message_id
+                            reply_to_message_id: ctx.message.reply_to_message.message_id
                         })
                     }
                 }
@@ -986,24 +986,24 @@ bot.command('send',async(ctx)=>{
 
 //check account
 bot.command('getid',async(ctx)=>{
-    if(bot.telegram.chat.type == 'private') {       
-        const profile4 = await bot.telegram.getUserProfilePhotos(bot.telegram.from.id)
-        await saver.checkBan(`${bot.telegram.from.id}`).then(async res => {
+    if(ctx.chat.type == 'private') {       
+        const profile4 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
+        await saver.checkBan(`${ctx.from.id}`).then(async res => {
             //console.log(res);
             if(res == true) {
-                if(bot.telegram.chat.type == 'private') {
-                    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                    await bot.telegram.sendMessage(`${messagebanned(ctx)}`)
+                if(ctx.chat.type == 'private') {
+                    await ctx.deleteMessage(ctx.message.message_id)
+                    await ctx.reply(`${messagebanned(ctx)}`)
                 }
             }else{
                 if(!profile4 || profile4.total_count == 0){
-                    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                    await bot.telegram.sendMessage(`<b>Name:</b> <a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${bot.telegram.from.id}`,{
+                    await ctx.deleteMessage(ctx.message.message_id)
+                    await ctx.reply(`<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${ctx.from.id}`,{
                         parse_mode:'HTML'  
                     })
                 }else{
-                    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                    await bot.telegram.sendMessageWithPhoto(profile4.photos[0][0].file_id,{caption: `<b>Name:</b> <a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${bot.telegram.from.id}`,
+                    await ctx.deleteMessage(ctx.message.message_id)
+                    await ctx.replyWithPhoto(profile4.photos[0][0].file_id,{caption: `<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${ctx.from.id}`,
                         parse_mode:'HTML'
                     })
                 }
@@ -1015,64 +1015,64 @@ bot.command('getid',async(ctx)=>{
 
 //remove files with file_id
 bot.command('rem', async(ctx) => {
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text2 = msgArray.join(' ')
         let text = `${text2}`.replace(/_/g, '-');
         console.log(text);
 
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.deleteMessage(ctx.message.message_id)
             saver.removeFile(text)
-            await bot.telegram.sendMessage('❌ 1 media deleted successfully')
+            await ctx.reply('❌ 1 media deleted successfully')
         }
     }
     
 })
 
 bot.command('remgrp', async(ctx) => {
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let media = msgArray.join(' ')
         //console.log(media);
 
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.deleteMessage(ctx.message.message_id)
             saver.removeFileMedia(media)
-            await bot.telegram.sendMessage('❌ Media group deleted successfully')
+            await ctx.reply('❌ Media group deleted successfully')
         }
     }
 })
 
 //remove whole collection(remove all files)
 bot.command('clear', async(ctx)=>{
-    if(bot.telegram.chat.type == 'private') {
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+    if(ctx.chat.type == 'private') {
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.deleteMessage(ctx.message.message_id)
             await saver.deleteCollection()
-            await bot.telegram.sendMessage('❌ All media deleted successfully')
+            await ctx.reply('❌ All media deleted successfully')
         }
     }
 })
 
 //removing all files sent by a user
 bot.command('remall', async(ctx) => {
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text = msgArray.join(' ')
         //console.log(text);
         let id = parseInt(text)
 
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.deleteMessage(ctx.message.message_id)
             await saver.removeUserFile(id)
-            await bot.telegram.sendMessage('❌ Delete all user media successfully')
+            await ctx.reply('❌ Delete all user media successfully')
         }
     }
     
@@ -1080,8 +1080,8 @@ bot.command('remall', async(ctx) => {
 
 //broadcasting message to bot users(from last joined to first)
 bot.command('broadcast',async(ctx)=>{
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text = msgArray.join(' ')
@@ -1111,20 +1111,20 @@ bot.command('broadcast',async(ctx)=>{
 
                     }
                 }
-                await bot.telegram.sendMessage(`✅ <b>Number of active users:</b> ${userId.length - totalFail.length}\n❌ <b>Total failed broadcasts:</b> ${totalFail.length}`,{
+                await ctx.reply(`✅ <b>Number of active users:</b> ${userId.length - totalFail.length}\n❌ <b>Total failed broadcasts:</b> ${totalFail.length}`,{
                     parse_mode:'HTML'
                 })
 
             }
 
-            if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+                await ctx.deleteMessage(ctx.message.message_id)
                 broadcast(text)
-                await bot.telegram.sendMessage('Broadcast starts (Message is broadcast from last joined to first).')
+                await ctx.reply('Broadcast starts (Message is broadcast from last joined to first).')
 
             }else{
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
-                await bot.telegram.sendMessage(`Commands can only be used by Admin.`) 
+                await ctx.deleteMessage(ctx.message.message_id)
+                await ctx.reply(`Commands can only be used by Admin.`) 
             }
 
         })
@@ -1134,8 +1134,8 @@ bot.command('broadcast',async(ctx)=>{
 
 //ban user with user id
 bot.command('banchat', async(ctx) => {
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text = msgArray.join(' ')
@@ -1144,11 +1144,11 @@ bot.command('banchat', async(ctx) => {
             id: text
         }
 
-        if(bot.telegram.chat.type == 'private') {
-            if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+        if(ctx.chat.type == 'private') {
+            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+                await ctx.deleteMessage(ctx.message.message_id)
                 await saver.banUser(userId).then(async res => {
-                    await bot.telegram.sendMessage('❌ Banned')
+                    await ctx.reply('❌ Banned')
                 })
             }
         }
@@ -1158,8 +1158,8 @@ bot.command('banchat', async(ctx) => {
 
 //unban user with user id
 bot.command('unbanchat', async(ctx) => {
-    if(bot.telegram.chat.type == 'private') {
-        const msg = bot.telegram.message.text
+    if(ctx.chat.type == 'private') {
+        const msg = ctx.message.text
         let msgArray = msg.split(' ')
         msgArray.shift();
         let text = msgArray.join(' ')
@@ -1168,11 +1168,11 @@ bot.command('unbanchat', async(ctx) => {
             id: text
         }
 
-        if(bot.telegram.chat.type == 'private') {
-            if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-                await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+        if(ctx.chat.type == 'private') {
+            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+                await ctx.deleteMessage(ctx.message.message_id)
                 await saver.unBan(userId).then(async res => {
-                    await bot.telegram.sendMessage('✅ Finished')
+                    await ctx.reply('✅ Finished')
                 })
             }
         }
@@ -1180,34 +1180,26 @@ bot.command('unbanchat', async(ctx) => {
     
 })
 
-bot.on('message', ctx => {
-    const { video, photo, document } = bot.telegram.message
-    if (video || photo || document) {
-        // add context to queue if video, photo or document exists
-        files.add({
-            ctx: bot.telegram.update
-        })
-    }
-})
-  
-// process files
-files.process(async job => processFiles(job.data.ctx))
-async function processFiles (ctx) {
-    if (bot.telegram.message.document) {  
-        if(bot.telegram.chat.type == 'private') {
-            if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-                const document = bot.telegram.message.document
+//saving file
+bot.on(['document', 'video', 'photo'], async(ctx) => {
+    const array1 = [ctx];
+    const element = array1.shift();
+    console.log(element);
+    if (element.message.document) {  
+        if(element.chat.type == 'private') {
+            if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
+                const document = element.message.document
     
-                if(bot.telegram.message.media_group_id == undefined){
+                if(element.message.media_group_id == undefined){
                     var tag = `✔️ Document save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(document.file_name == undefined){
-                        var file_name2 = `${today2(ctx)}`;
-                        if(bot.telegram.message.caption == undefined){
+                        var file_name2 = `${today2(element)}`;
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }else{
                         var exstension2 = document.file_name;
@@ -1215,22 +1207,22 @@ async function processFiles (ctx) {
                         var doctext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${doctext2}`;
-                        if(bot.telegram.message.caption == undefined){
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${bot.telegram.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${bot.telegram.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${element.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${element.message.media_group_id}`;
                     if(document.file_name == undefined){
-                        var file_name2 = `${today2(ctx)}`;
-                        if(bot.telegram.message.caption == undefined){
+                        var file_name2 = `${today2(element)}`;
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }else{
                         var exstension2 = document.file_name;
@@ -1238,10 +1230,10 @@ async function processFiles (ctx) {
                         var doctext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${doctext2}`;
-                        if(bot.telegram.message.caption == undefined){
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }
                 }
@@ -1249,28 +1241,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${document.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await bot.telegram.sendMessage(`File already exists.`,{
-                            reply_to_message_id: bot.telegram.message.message_id
+                        await element.reply(`File already exists.`,{
+                            reply_to_message_id: element.message.message_id
                         })
                     }else{
-                        await bot.telegram.sendDocument(document.file_id, {
-                            chat_id: bot.telegram.chat.id,
+                        await element.replyWithDocument(document.file_id, {
+                            chat_id: element.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: bot.telegram.message.message_id
+                            reply_to_message_id: element.message.message_id
                         })
-                        await bot.telegram.sendDocument(document.file_id, {
+                        await element.replyWithDocument(document.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${bot.telegram.from.id}\n<b>Name:</b> <a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: bot.telegram.from.id,
+                            userId: element.from.id,
                             file_id: document.file_id,
-                            mediaId: bot.telegram.message.media_group_id,
-                            caption: bot.telegram.message.caption,
+                            mediaId: element.message.media_group_id,
+                            caption: element.message.caption,
                             file_size: document.file_size,
                             uniqueId: document.file_unique_id,
                             type: 'document'
@@ -1280,21 +1272,21 @@ async function processFiles (ctx) {
                 })
             }
         }
-    } else if (bot.telegram.message.video) {
-        if(bot.telegram.chat.type == 'private') {
-            if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-                const video = bot.telegram.message.video
+    } else if (element.message.video) {
+        if(element.chat.type == 'private') {
+            if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
+                const video = element.message.video
         
-                if(bot.telegram.message.media_group_id == undefined){
+                if(element.message.media_group_id == undefined){
                     var tag = `✔️ Video save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(video.file_name == undefined){
-                        var file_name2 = `${today2(ctx)}`;
-                        if(bot.telegram.message.caption == undefined){
+                        var file_name2 = `${today2(element)}`;
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }else{
                         var exstension2 = video.file_name;
@@ -1302,22 +1294,22 @@ async function processFiles (ctx) {
                         var vidtext2 = exstension2.replace(regex2, '');
             
                         var file_name2 = `${vidtext2}`;
-                        if(bot.telegram.message.caption == undefined){
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${bot.telegram.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${bot.telegram.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${element.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${element.message.media_group_id}`;
                     if(video.file_name == undefined){
-                        var file_name2 = `${today2(ctx)}`;
-                        if(bot.telegram.message.caption == undefined){
+                        var file_name2 = `${today2(element)}`;
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }else{
                         var exstension2 = video.file_name;
@@ -1325,10 +1317,10 @@ async function processFiles (ctx) {
                         var vidtext2 = exstension2.replace(regex2, '');
             
                         var file_name2 = `${vidtext2}`;
-                        if(bot.telegram.message.caption == undefined){
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }
                 }
@@ -1336,28 +1328,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${video.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await bot.telegram.sendMessage(`File already exists.`,{
-                            reply_to_message_id: bot.telegram.message.message_id
+                        await element.reply(`File already exists.`,{
+                            reply_to_message_id: element.message.message_id
                         })
                     }else{
-                        await bot.telegram.sendMessageWithVideo(video.file_id, {
-                            chat_id: bot.telegram.chat.id,
+                        await element.replyWithVideo(video.file_id, {
+                            chat_id: element.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: bot.telegram.message.message_id
+                            reply_to_message_id: element.message.message_id
                         })
-                        await bot.telegram.sendMessageWithVideo(video.file_id, {
+                        await element.replyWithVideo(video.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${bot.telegram.from.id}\n<b>Name:</b> <a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: bot.telegram.from.id,
+                            userId: element.from.id,
                             file_id: video.file_id,
-                            mediaId: bot.telegram.message.media_group_id,
-                            caption: bot.telegram.message.caption,
+                            mediaId: element.message.media_group_id,
+                            caption: element.message.caption,
                             file_size: video.file_size,
                             uniqueId: video.file_unique_id,
                             type: 'video'
@@ -1367,21 +1359,21 @@ async function processFiles (ctx) {
                 })
             }
         }
-    } else if (bot.telegram.message.photo[1]) {
-        if(bot.telegram.chat.type == 'private') {
-            if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-                const photo = bot.telegram.message.photo[1]
+    } else if (element.message.photo[1]) {
+        if(element.chat.type == 'private') {
+            if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
+                const photo = element.message.photo[1]
     
-                if(bot.telegram.message.media_group_id == undefined){
+                if(element.message.media_group_id == undefined){
                     var tag = `✔️ Photo save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(photo.file_name == undefined){
-                        var file_name2 = `${today2(ctx)}`;
-                        if(bot.telegram.message.caption == undefined){
+                        var file_name2 = `${today2(element)}`;
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }else{
                         var exstension2 = photo.file_name;
@@ -1389,22 +1381,22 @@ async function processFiles (ctx) {
                         var photext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${photext2}`;
-                        if(bot.telegram.message.caption == undefined){
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${bot.telegram.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${bot.telegram.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${element.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${element.message.media_group_id}`;
                     if(photo.file_name == undefined){
-                        var file_name2 = `${today2(ctx)}`;
-                        if(bot.telegram.message.caption == undefined){
+                        var file_name2 = `${today2(element)}`;
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }else{
                         var exstension2 = photo.file_name;
@@ -1412,10 +1404,10 @@ async function processFiles (ctx) {
                         var photext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${photext2}`;
-                        if(bot.telegram.message.caption == undefined){
+                        if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${bot.telegram.message.caption}`;
+                            var caption2 =  `\n\n${element.message.caption}`;
                         }
                     }
                 }
@@ -1423,28 +1415,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${photo.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await bot.telegram.sendMessage(`File already exists.`,{
-                            reply_to_message_id: bot.telegram.message.message_id
+                        await element.reply(`File already exists.`,{
+                            reply_to_message_id: element.message.message_id
                         })
                     }else{
-                        await bot.telegram.sendMessageWithPhoto(photo.file_id, {
-                            chat_id: bot.telegram.chat.id,
+                        await element.replyWithPhoto(photo.file_id, {
+                            chat_id: element.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: bot.telegram.message.message_id
+                            reply_to_message_id: element.message.message_id
                         })
-                        await bot.telegram.sendMessageWithPhoto(photo.file_id, {
+                        await element.replyWithPhoto(photo.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${bot.telegram.from.id}\n<b>Name:</b> <a href="tg://user?id=${bot.telegram.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: bot.telegram.from.id,
+                            userId: element.from.id,
                             file_id: photo.file_id,
-                            mediaId: bot.telegram.message.media_group_id,
-                            caption: bot.telegram.message.caption,
+                            mediaId: element.message.media_group_id,
+                            caption: element.message.caption,
                             file_size: photo.file_size,
                             uniqueId: photo.file_unique_id,
                             type: 'photo'
@@ -1455,28 +1447,28 @@ async function processFiles (ctx) {
             }
         }
     }
-}
+})
 
 bot.command('stats',async(ctx)=>{
-    await bot.telegram.deleteMessage(bot.telegram.message.message_id)
+    await ctx.deleteMessage(ctx.message.message_id)
     const stats1 = await saver.getUser().then(async res=>{
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.sendMessage(`📊 Total users: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.reply(`📊 Total users: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
     const stats2 = await saver.getMedia().then(async res=>{
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.sendMessage(`📊 Total media: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.reply(`📊 Total media: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
     const stats3 = await saver.getBan().then(async res=>{
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.sendMessage(`📊 Total users violate: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.reply(`📊 Total users violate: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
     const stats4 = await saver.getGroup().then(async res=>{
-        if(bot.telegram.from.id == Number(process.env.ADMIN) || bot.telegram.from.id == Number(process.env.ADMIN1) || bot.telegram.from.id == Number(process.env.ADMIN2)){
-            await bot.telegram.sendMessage(`📊 Total registered groups: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            await ctx.reply(`📊 Total registered groups: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
 })
