@@ -1,9 +1,10 @@
 require('dotenv').config();
+const Queue = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
-const bot = new Telegraf(process.env.TOKEN, {
-   handlerTimeout: 90_000,
-});
+
+const files = new Queue('files')
+const bot = new Telegraf(process.env);
 
 process.env.TZ = "Asia/Jakarta";
 
@@ -1180,8 +1181,22 @@ bot.command('unbanchat', async(ctx) => {
     
 })
 
-//saving file
-bot.on(['document', 'video', 'photo'], async(ctx) => {
+bot.on('message', ctx => {
+    const { video, photo, document } = ctx.message
+    if (video || photo || document) {
+        // add context to queue if video, photo or document exists
+        files.add({
+            ctx
+        })
+    }
+})
+  
+// process files
+files.process(async job => processFiles(job.data.ctx))
+
+// your code
+
+async function processFiles (ctx) {
     const array1 = [ctx];
     const element = array1.shift();
     console.log(element);
@@ -1447,7 +1462,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
             }
         }
     }
-})
+}
 
 bot.command('stats',async(ctx)=>{
     await ctx.deleteMessage(ctx.message.message_id)
