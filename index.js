@@ -1181,7 +1181,6 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-const media = []
 bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const element = array1.shift();
