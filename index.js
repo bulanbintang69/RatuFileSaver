@@ -47,16 +47,16 @@ function today2(ctx){
 
 //Function
 function first_name(ctx){
-    return `${ctx.from.first_name ? ctx.from.first_name : ""}`;
+    return `${bot.context.from.first_name ? bot.context.from.first_name : ""}`;
 }
 function last_name(ctx){
-    return `${ctx.from.last_name ? ctx.from.last_name : ""}`;
+    return `${bot.context.from.last_name ? bot.context.from.last_name : ""}`;
 }
 function username(ctx){
-    return ctx.from.username ? `@${ctx.from.username}` : "";
+    return bot.context.from.username ? `@${bot.context.from.username}` : "";
 }
 function fromid(ctx){
-    return ctx.from.id ? `[${ctx.from.id}]` : "";
+    return bot.context.from.id ? `[${bot.context.from.id}]` : "";
 }
 function captionbuild(ctx){
     return `${process.env.CAPTIONLINK}`;
@@ -100,8 +100,8 @@ const inKey2 = [
 
 //BOT START
 bot.start(async(ctx)=>{
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         //console.log(msgArray.length);
         let length = msgArray.length
@@ -109,24 +109,24 @@ bot.start(async(ctx)=>{
         let query = msgArray.join(' ')
     
         const user = {
-            first_name:ctx.from.first_name,
-            userId:ctx.from.id
+            first_name:bot.context.from.first_name,
+            userId:bot.context.from.id
         }
 
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
             //welcoming message on /start and ifthere is a query available we can send files
             if(length == 1){
-                await ctx.deleteMessage(ctx.message.message_id)
-                const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
+                await bot.context.deleteMessage(bot.context.message.message_id)
+                const profile = await bot.telegram.getUserProfilePhotos(bot.context.from.id)
                 if(!profile || profile.total_count == 0)
-                    return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
+                    return await bot.context.reply(`<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
                         parse_mode:'HTML',
                         disable_web_page_preview: true,
                         reply_markup:{
                             inline_keyboard:inKey
                         }
                     })
-                    await ctx.replyWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
+                    await bot.context.replyWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
                         parse_mode:'HTML',
                         disable_web_page_preview: true,
                         reply_markup:{
@@ -145,15 +145,15 @@ bot.start(async(ctx)=>{
                         }
 
                         async function captionFunction() {
-                            return await ctx.reply(`${captionbuild(ctx)}`,{
+                            return await bot.context.reply(`${captionbuild(ctx)}`,{
                                 parse_mode:'HTML'
                             })
                         }
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        await bot.context.telegram.sendMediaGroup(bot.context.chat.id, mediagroup);
                         setTimeout(captionFunction, 1000)
                     }catch(error){
-                        await ctx.reply(`Media not found or has been removed.`)
+                        await bot.context.reply(`Media not found or has been removed.`)
                     }
                 }else{
                     let query2 = query;
@@ -161,72 +161,72 @@ bot.start(async(ctx)=>{
                         const res2 = await saver.getFile2(query2)
         
                         async function captionFunction2() {
-                            await ctx.reply(`${captionbuild(ctx)}`,{
+                            await bot.context.reply(`${captionbuild(ctx)}`,{
                                 parse_mode:'HTML'
                             })
                         }
                         if(res2.type=='video'){
-                            await ctx.deleteMessage(ctx.message.message_id)
+                            await bot.context.deleteMessage(bot.context.message.message_id)
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
-                                return await ctx.replyWithVideo(res2.file_id);
+                                return await bot.context.replyWithVideo(res2.file_id);
                             }
-                            await ctx.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
+                            await bot.context.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             });
                                 setTimeout(captionFunction2, 1000)
                         }else if(res2.type=='photo'){
-                            await ctx.deleteMessage(ctx.message.message_id)
+                            await bot.context.deleteMessage(bot.context.message.message_id)
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
-                                return await ctx.replyWithPhoto(res2.file_id);
+                                return await bot.context.replyWithPhoto(res2.file_id);
                             }
-                            await ctx.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
+                            await bot.context.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             });
                                 setTimeout(captionFunction2, 1000)
                         }else if(res2.type=='document'){
-                            await ctx.deleteMessage(ctx.message.message_id)
+                            await bot.context.deleteMessage(bot.context.message.message_id)
                             if(!res2.caption) {
                                 setTimeout(captionFunction2, 1000)
-                                return await ctx.replyWithDocument(res2.file_id);
+                                return await bot.context.replyWithDocument(res2.file_id);
                             }
-                            await ctx.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
+                            await bot.context.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             })
                                 setTimeout(captionFunction2, 1000)
                         }
                     }catch(error){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        await ctx.reply(`Media not found or has been removed.`)
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        await bot.context.reply(`Media not found or has been removed.`)
                     }
                 }
             }
         }else{
             try {
-                var botStatus = await bot.telegram.getChatMember(channelId, ctx.botInfo.id)
-                var member = await bot.telegram.getChatMember(channelId, ctx.from.id)
+                var botStatus = await bot.telegram.getChatMember(channelId, bot.context.botInfo.id)
+                var member = await bot.telegram.getChatMember(channelId, bot.context.from.id)
                 //console.log(member);
                 if(member.status == 'restricted' || member.status == 'left' || member.status == 'kicked'){
-                    const profile2 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
-                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
+                    const profile2 = await bot.telegram.getUserProfilePhotos(bot.context.from.id)
+                    await saver.checkBan(`${bot.context.from.id}`).then(async res => {
                         //console.log(res);
                         if(res == true) {
-                            if(ctx.chat.type == 'private') {
-                                await ctx.deleteMessage(ctx.message.message_id)
-                                await ctx.reply(`${messagebanned(ctx)}`)
+                            if(bot.context.chat.type == 'private') {
+                                await bot.context.deleteMessage(bot.context.message.message_id)
+                                await bot.context.reply(`${messagebanned(ctx)}`)
                             }
                         }else{
-                            ctx.deleteMessage()
+                            bot.context.deleteMessage()
                             if(!profile2 || profile2.total_count == 0)
-                                return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,{
+                                return await bot.context.reply(`<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,{
                                     parse_mode:'HTML',
                                     disable_web_page_preview: true,
                                     reply_markup:{
                                         inline_keyboard:inKey2
                                     }
                                 })
-                                await ctx.replyWithPhoto(profile2.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,
+                                await bot.context.replyWithPhoto(profile2.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${welcomejoin(ctx)}`,
                                     parse_mode:'HTML',
                                     disable_web_page_preview: true,
                                     reply_markup:{
@@ -238,25 +238,25 @@ bot.start(async(ctx)=>{
                 }else{
                     //welcoming message on /start and ifthere is a query available we can send files
                     if(length == 1){
-                        const profile3 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
-                            await saver.checkBan(`${ctx.from.id}`).then(async res => {
+                        const profile3 = await bot.telegram.getUserProfilePhotos(bot.context.from.id)
+                            await saver.checkBan(`${bot.context.from.id}`).then(async res => {
                                 //console.log(res);
                                 if(res == true) {
-                                    if(ctx.chat.type == 'private') {
-                                        await ctx.deleteMessage(ctx.message.message_id)
-                                        await ctx.reply(`${messagebanned(ctx)}`)
+                                    if(bot.context.chat.type == 'private') {
+                                        await bot.context.deleteMessage(bot.context.message.message_id)
+                                        await bot.context.reply(`${messagebanned(ctx)}`)
                                     }
                                 }else{
-                                    await ctx.deleteMessage(ctx.message.message_id)
+                                    await bot.context.deleteMessage(bot.context.message.message_id)
                                     if(!profile3 || profile3.total_count == 0)
-                                        return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
+                                        return await bot.context.reply(`<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
                                             parse_mode:'HTML',
                                             disable_web_page_preview: true,
                                             reply_markup:{
                                                 inline_keyboard:inKey
                                             }
                                         })
-                                        await ctx.replyWithPhoto(profile3.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
+                                        await bot.context.replyWithPhoto(profile3.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
                                             parse_mode:'HTML',
                                             disable_web_page_preview: true,
                                             reply_markup:{
@@ -277,34 +277,34 @@ bot.start(async(ctx)=>{
                                     }
                     
                                     async function captionFunction() {
-                                        return await ctx.reply(`${captionbuild(ctx)}`,{
+                                        return await bot.context.reply(`${captionbuild(ctx)}`,{
                                             parse_mode:'HTML'
                                         })
                                     }
-                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
+                                    await saver.checkBan(`${bot.context.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            await ctx.deleteMessage(ctx.message.message_id)
-                                            if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.message.message_id)
-                                                await ctx.reply(`${messagebanned(ctx)}`)
+                                            await bot.context.deleteMessage(bot.context.message.message_id)
+                                            if(bot.context.chat.type == 'private') {
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
+                                                await bot.context.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await ctx.deleteMessage(ctx.message.message_id)
-                                            await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
+                                            await bot.context.deleteMessage(bot.context.message.message_id)
+                                            await bot.context.telegram.sendMediaGroup(bot.context.chat.id, mediagroup);
                                             setTimeout(captionFunction, 1000)
                                         }
                                     })
                                 }catch(error){
-                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
+                                    await saver.checkBan(`${bot.context.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.message.message_id)
-                                                await ctx.reply(`${messagebanned(ctx)}`)
+                                            if(bot.context.chat.type == 'private') {
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
+                                                await bot.context.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await ctx.reply(`Media not found or has been removed.`)
+                                            await bot.context.reply(`Media not found or has been removed.`)
                                         }
                                     })
                                 }
@@ -314,45 +314,45 @@ bot.start(async(ctx)=>{
                                     const res2 = await saver.getFile2(query2)
                     
                                     async function captionFunction2() {
-                                        await ctx.reply(`${captionbuild(ctx)}`,{
+                                        await bot.context.reply(`${captionbuild(ctx)}`,{
                                             parse_mode:'HTML'
                                         })
                                     }
-                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
+                                    await saver.checkBan(`${bot.context.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.message.message_id)
-                                                await ctx.reply(`${messagebanned(ctx)}`)
+                                            if(bot.context.chat.type == 'private') {
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
+                                                await bot.context.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
                                             if(res2.type=='video'){
-                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
-                                                    return ctx.replyWithVideo(res2.file_id);
+                                                    return bot.context.replyWithVideo(res2.file_id);
                                                 }
-                                                await ctx.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
+                                                await bot.context.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 });
                                                     setTimeout(captionFunction2, 1000)
                                             }else if(res2.type=='photo'){
-                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
-                                                    return await ctx.replyWithPhoto(res2.file_id);
+                                                    return await bot.context.replyWithPhoto(res2.file_id);
                                                 }
-                                                await ctx.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
+                                                await bot.context.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 });
                                                     setTimeout(captionFunction2, 1000)
                                             }else if(res2.type=='document'){
-                                                await ctx.deleteMessage(ctx.message.message_id)
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
                                                 if(!res2.caption) {
                                                     setTimeout(captionFunction2, 1000)
-                                                    return await ctx.replyWithDocument(res2.file_id);
+                                                    return await bot.context.replyWithDocument(res2.file_id);
                                                 }
-                                                await ctx.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
+                                                await bot.context.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 })
                                                     setTimeout(captionFunction2, 1000)
@@ -360,16 +360,16 @@ bot.start(async(ctx)=>{
                                         }
                                     })
                                 }catch(error){
-                                    await saver.checkBan(`${ctx.from.id}`).then(async res => {
+                                    await saver.checkBan(`${bot.context.from.id}`).then(async res => {
                                         //console.log(res);
                                         if(res == true) {
-                                            if(ctx.chat.type == 'private') {
-                                                await ctx.deleteMessage(ctx.message.message_id)
-                                                await ctx.reply(`${messagebanned(ctx)}`)
+                                            if(bot.context.chat.type == 'private') {
+                                                await bot.context.deleteMessage(bot.context.message.message_id)
+                                                await bot.context.reply(`${messagebanned(ctx)}`)
                                             }
                                         }else{
-                                            await ctx.deleteMessage(ctx.message.message_id)
-                                            await ctx.reply(`Media not found or has been removed.`)
+                                            await bot.context.deleteMessage(bot.context.message.message_id)
+                                            await bot.context.reply(`Media not found or has been removed.`)
                                         }
                                     })
                                 }
@@ -378,8 +378,8 @@ bot.start(async(ctx)=>{
                     }
                 }
             catch(error){
-                await ctx.deleteMessage(ctx.message.message_id)
-                await ctx.reply(`${messagebotnoaddgroup(ctx)}`)
+                await bot.context.deleteMessage(bot.context.message.message_id)
+                await bot.context.reply(`${messagebotnoaddgroup(ctx)}`)
             }
         }
         //saving user details to the database
@@ -389,8 +389,8 @@ bot.start(async(ctx)=>{
 
 //DEFINING POP CALLBACK
 bot.action('POP', async(ctx)=>{
-    await ctx.deleteMessage()
-    await ctx.reply(`${messagelink(ctx)}`,{
+    await bot.context.deleteMessage()
+    await bot.context.reply(`${messagelink(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
             inline_keyboard: [
@@ -402,8 +402,8 @@ bot.action('POP', async(ctx)=>{
 
 //DEFINING DOC CALLBACK
 bot.action('DOC', async(ctx)=>{
-    await ctx.deleteMessage()
-    await ctx.reply(`${documentation(ctx)}`,{
+    await bot.context.deleteMessage()
+    await bot.context.reply(`${documentation(ctx)}`,{
         parse_mode: 'HTML',
         reply_markup:{
             inline_keyboard: [
@@ -414,8 +414,8 @@ bot.action('DOC', async(ctx)=>{
 })
 
 bot.action('SRC', async(ctx)=>{
-    await ctx.deleteMessage()
-    await ctx.reply(`${helpcommand.botsrc}`,{
+    await bot.context.deleteMessage()
+    await bot.context.reply(`${helpcommand.botsrc}`,{
         parse_mode: 'HTML',
         reply_markup:{
             inline_keyboard: [
@@ -427,8 +427,8 @@ bot.action('SRC', async(ctx)=>{
 })
 
 bot.action('HELP',async(ctx)=>{
-    await ctx.deleteMessage()
-    await ctx.reply(`${helpcommand.bothelp}`,{
+    await bot.context.deleteMessage()
+    await bot.context.reply(`${helpcommand.bothelp}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
         reply_markup:{
@@ -441,8 +441,8 @@ bot.action('HELP',async(ctx)=>{
 })
 
 bot.action('COMM', async(ctx)=>{
-    await ctx.deleteMessage()
-    await ctx.reply(`${helpcommand.botcommand}`,{
+    await bot.context.deleteMessage()
+    await bot.context.reply(`${helpcommand.botcommand}`,{
         parse_mode: 'HTML',
         disable_web_page_preview: true,
         reply_markup:{
@@ -454,17 +454,17 @@ bot.action('COMM', async(ctx)=>{
 })
 
 bot.action('STARTUP', async(ctx)=>{
-    await ctx.deleteMessage()
-    const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
+    await bot.context.deleteMessage()
+    const profile = await bot.telegram.getUserProfilePhotos(bot.context.from.id)
     if(!profile || profile.total_count == 0)
-        return await ctx.reply(`<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
+        return await bot.context.reply(`<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,{
             parse_mode:'HTML',
             disable_web_page_preview: true,
             reply_markup:{
                 inline_keyboard:inKey
             }
         })
-        await ctx.replyWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
+        await bot.context.replyWithPhoto(profile.photos[0][0].file_id,{caption: `<a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a> \n\n${messagewelcome(ctx)}`,
             parse_mode:'HTML',
             disable_web_page_preview: true,
             reply_markup:{
@@ -475,17 +475,17 @@ bot.action('STARTUP', async(ctx)=>{
 
 //TEST BOT
 bot.hears(/ping/i,async(ctx)=>{
-    if(ctx.chat.type == 'private') {    
-        await saver.checkBan(`${ctx.from.id}`).then(async res => {
+    if(bot.context.chat.type == 'private') {    
+        await saver.checkBan(`${bot.context.from.id}`).then(async res => {
             //console.log(res);
             if(res == true) {
-                if(ctx.chat.type == 'private') {
-                    await ctx.deleteMessage(ctx.message.message_id)
-                    await ctx.reply(`${messagebanned(ctx)}`)
+                if(bot.context.chat.type == 'private') {
+                    await bot.context.deleteMessage(bot.context.message.message_id)
+                    await bot.context.reply(`${messagebanned(ctx)}`)
                 }
             }else{
-                await ctx.deleteMessage(ctx.message.message_id)
-                let chatId = ctx.message.from.id;
+                await bot.context.deleteMessage(bot.context.message.message_id)
+                let chatId = bot.context.message.from.id;
                 let opts = {
                     reply_markup:{
                         inline_keyboard: [[{text:'OK',callback_data:'PONG'}]]
@@ -498,26 +498,26 @@ bot.hears(/ping/i,async(ctx)=>{
 })
 
 bot.action('PONG',async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await bot.context.deleteMessage(bot.context.message.message_id)
 })
 
 //GROUP COMMAND
 bot.command('reload',async(ctx)=>{
-    var botStatus2 = await bot.telegram.getChatMember(ctx.chat.id, ctx.botInfo.id)
-    var memberstatus = await bot.telegram.getChatMember(ctx.chat.id, ctx.from.id)
+    var botStatus2 = await bot.telegram.getChatMember(bot.context.chat.id, bot.context.botInfo.id)
+    var memberstatus = await bot.telegram.getChatMember(bot.context.chat.id, bot.context.from.id)
     //console.log(memberstatus);
     const group = {
-        groupId:ctx.chat.id
+        groupId:bot.context.chat.id
     }
-    if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+    if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
         if(memberstatus.status == 'creator' || memberstatus.status == 'administrator'){
-            await ctx.deleteMessage(ctx.message.message_id)
-            await ctx.reply('Bot restarted')
+            await bot.context.deleteMessage(bot.context.message.message_id)
+            await bot.context.reply('Bot restarted')
             await saver.saveGroup(group)
         }
-        if(ctx.from.username == 'GroupAnonymousBot'){
-            await ctx.deleteMessage(ctx.message.message_id)
-            await ctx.reply('Bot restarted')
+        if(bot.context.from.username == 'GroupAnonymousBot'){
+            await bot.context.deleteMessage(bot.context.message.message_id)
+            await bot.context.reply('Bot restarted')
             await saver.saveGroup(group)
         }
     }
@@ -533,45 +533,45 @@ bot.command('kick',async(ctx)=>{
         }
         async function kick() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, bot.context.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, bot.context.from.id)
                 //console.log(memberstatus);
 
-                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+                if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){  
-                        await ctx.deleteMessage(ctx.message.message_id)  
+                        await bot.context.deleteMessage(bot.context.message.message_id)  
                         if(memberstatus.can_restrict_members == true){       
-                            if(ctx.message.reply_to_message == undefined){
-                                let args = ctx.message.text.split(" ").slice(1)
-                                await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
+                            if(bot.context.message.reply_to_message == undefined){
+                                let args = bot.context.message.text.split(" ").slice(1)
+                                await bot.telegram.kickChatMember(bot.context.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
                                 })
                             }
-                            await bot.telegram.kickChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.kickChatMember(bot.context.chat.id, bot.context.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        if(ctx.message.reply_to_message == undefined){
-                            let args = ctx.message.text.split(" ").slice(1)
-                            await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        if(bot.context.message.reply_to_message == undefined){
+                            let args = bot.context.message.text.split(" ").slice(1)
+                            await bot.telegram.kickChatMember(bot.context.chat.id, Number(args[0])).then(async result =>{
                                 //console.log(result)
                             })
                         }
-                        await bot.telegram.kickChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
+                        await bot.telegram.kickChatMember(bot.context.chat.id, bot.context.message.reply_to_message.from.id).then(async result =>{
                             //console.log(result)
                         })
                     }else{
-                        if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage(ctx.message.message_id)
-                            if(ctx.message.reply_to_message == undefined){
-                                let args = ctx.message.text.split(" ").slice(1)
-                                await bot.telegram.kickChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
+                        if(bot.context.from.username == 'GroupAnonymousBot'){
+                            await bot.context.deleteMessage(bot.context.message.message_id)
+                            if(bot.context.message.reply_to_message == undefined){
+                                let args = bot.context.message.text.split(" ").slice(1)
+                                await bot.telegram.kickChatMember(bot.context.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
                                 })
                             }
-                            await bot.telegram.kickChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.kickChatMember(bot.context.chat.id, bot.context.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
                             })
                         }
@@ -593,16 +593,16 @@ bot.command('ban',async(ctx)=>{
         }
         async function ban() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, bot.context.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, bot.context.from.id)
                 //console.log(memberstatus);
 
-                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+                if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
+                        await bot.context.deleteMessage(bot.context.message.message_id)
                         if(memberstatus.can_restrict_members == true){
-                            if(ctx.message.reply_to_message == undefined){
-                               const str = ctx.message.text;
+                            if(bot.context.message.reply_to_message == undefined){
+                               const str = bot.context.message.text;
                                const words = str.split(/ +/g);
                                const command = words.shift().slice(1);
                                const userId = words.shift();
@@ -610,20 +610,20 @@ bot.command('ban',async(ctx)=>{
                                const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
 
                                await bot.telegram.callApi('banChatMember', {
-                               chat_id: ctx.message.chat.id,
+                               chat_id: bot.context.message.chat.id,
                                user_id: userId
                                }).then(async result =>{
                                    //console.log(result)
-                                   await ctx.reply(`[${userId}] blocked. ${caption2}`,{
+                                   await bot.context.reply(`[${userId}] blocked. ${caption2}`,{
                                        parse_mode: 'HTML'
                                    })
-                                   return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
+                                   return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.context.message.chat.title} ${caption2}`,{
                                        parse_mode: 'HTML'
                                    })
                                })
                             }
     
-                            const str = ctx.message.text;
+                            const str = bot.context.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const userId = words.shift();
@@ -631,25 +631,25 @@ bot.command('ban',async(ctx)=>{
                             const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
     
                             await bot.telegram.callApi('banChatMember', {
-                            chat_id: ctx.message.chat.id,
-                            user_id: ctx.message.reply_to_message.from.id
+                            chat_id: bot.context.message.chat.id,
+                            user_id: bot.context.message.reply_to_message.from.id
                             }).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
-                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
-                                await ctx.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
+                                let replyUsername = bot.context.message.reply_to_message.from.username ? `@${bot.context.message.reply_to_message.from.username}` : `${bot.context.message.reply_to_message.from.first_name}`;
+                                let replyFromid = bot.context.message.reply_to_message.from.id ? `[${bot.context.message.reply_to_message.from.id}]` : "";
+                                await bot.context.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
                                     parse_mode: 'HTML',
-                                    reply_to_message_id: ctx.message.reply_to_message.message_id
+                                    reply_to_message_id: bot.context.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
+                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.context.message.chat.title} ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        if(ctx.message.reply_to_message == undefined){
-                            const str = ctx.message.text;
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        if(bot.context.message.reply_to_message == undefined){
+                            const str = bot.context.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const userId = words.shift();
@@ -657,20 +657,20 @@ bot.command('ban',async(ctx)=>{
                             const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
 
                             await bot.telegram.callApi('banChatMember', {
-                            chat_id: ctx.message.chat.id,
+                            chat_id: bot.context.message.chat.id,
                             user_id: userId
                             }).then(async result =>{
                                 //console.log(result)
-                                await ctx.reply(`[${userId}] blocked. ${caption2}`,{
+                                await bot.context.reply(`[${userId}] blocked. ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
-                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
+                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.context.message.chat.title} ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
                             })
                         }
 
-                        const str = ctx.message.text;
+                        const str = bot.context.message.text;
                         const words = str.split(/ +/g);
                         const command = words.shift().slice(1);
                         const userId = words.shift();
@@ -678,25 +678,25 @@ bot.command('ban',async(ctx)=>{
                         const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
 
                         await bot.telegram.callApi('banChatMember', {
-                        chat_id: ctx.message.chat.id,
-                        user_id: ctx.message.reply_to_message.from.id
+                        chat_id: bot.context.message.chat.id,
+                        user_id: bot.context.message.reply_to_message.from.id
                         }).then(async result =>{
                             //console.log(result)
-                            let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
-                            let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
-                            await ctx.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
+                            let replyUsername = bot.context.message.reply_to_message.from.username ? `@${bot.context.message.reply_to_message.from.username}` : `${bot.context.message.reply_to_message.from.first_name}`;
+                            let replyFromid = bot.context.message.reply_to_message.from.id ? `[${bot.context.message.reply_to_message.from.id}]` : "";
+                            await bot.context.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
                                 parse_mode: 'HTML',
-                                reply_to_message_id: ctx.message.reply_to_message.message_id
+                                reply_to_message_id: bot.context.message.reply_to_message.message_id
                             })
-                            return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
+                            return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.context.message.chat.title} ${caption2}`,{
                                 parse_mode: 'HTML'
                             })
                         })
                     }else{
-                        if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage(ctx.message.message_id)
-                            if(ctx.message.reply_to_message == undefined){
-                                const str = ctx.message.text;
+                        if(bot.context.from.username == 'GroupAnonymousBot'){
+                            await bot.context.deleteMessage(bot.context.message.message_id)
+                            if(bot.context.message.reply_to_message == undefined){
+                                const str = bot.context.message.text;
                                 const words = str.split(/ +/g);
                                 const command = words.shift().slice(1);
                                 const userId = words.shift();
@@ -704,20 +704,20 @@ bot.command('ban',async(ctx)=>{
                                 const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
     
                                 await bot.telegram.callApi('banChatMember', {
-                                chat_id: ctx.message.chat.id,
+                                chat_id: bot.context.message.chat.id,
                                 user_id: userId
                                 }).then(async result =>{
                                     //console.log(result)
-                                    await ctx.reply(`[${userId}] blocked. ${caption2}`,{
+                                    await bot.context.reply(`[${userId}] blocked. ${caption2}`,{
                                         parse_mode: 'HTML'
                                     })
-                                    return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
+                                    return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.context.message.chat.title} ${caption2}`,{
                                         parse_mode: 'HTML'
                                     })
                                 })
                             }
     
-                            const str = ctx.message.text;
+                            const str = bot.context.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const userId = words.shift();
@@ -725,17 +725,17 @@ bot.command('ban',async(ctx)=>{
                             const caption2 = caption ? `\n<b>Because:</b> ${caption}` : "";
     
                             await bot.telegram.callApi('banChatMember', {
-                            chat_id: ctx.message.chat.id,
-                            user_id: ctx.message.reply_to_message.from.id
+                            chat_id: bot.context.message.chat.id,
+                            user_id: bot.context.message.reply_to_message.from.id
                             }).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
-                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
-                                await ctx.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
+                                let replyUsername = bot.context.message.reply_to_message.from.username ? `@${bot.context.message.reply_to_message.from.username}` : `${bot.context.message.reply_to_message.from.first_name}`;
+                                let replyFromid = bot.context.message.reply_to_message.from.id ? `[${bot.context.message.reply_to_message.from.id}]` : "";
+                                await bot.context.reply(`${replyUsername} ${replyFromid} blocked. ${caption2}`,{
                                     parse_mode: 'HTML',
-                                    reply_to_message_id: ctx.message.reply_to_message.message_id
+                                    reply_to_message_id: bot.context.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${ctx.message.chat.title} ${caption2}`,{
+                                return await bot.telegram.sendMessage(userId, `You have been blocked on ${bot.context.message.chat.title} ${caption2}`,{
                                     parse_mode: 'HTML'
                                 })
                             })
@@ -758,70 +758,70 @@ bot.command('unban',async(ctx)=>{
         }
         async function unban() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, bot.context.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, bot.context.from.id)
                 //console.log(memberstatus);
 
-                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+                if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
+                        await bot.context.deleteMessage(bot.context.message.message_id)
                         if(memberstatus.can_restrict_members == true){
-                            if(ctx.message.reply_to_message == undefined){
-                                let args = ctx.message.text.split(" ").slice(1)
-                                await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
+                            if(bot.context.message.reply_to_message == undefined){
+                                let args = bot.context.message.text.split(" ").slice(1)
+                                await bot.telegram.unbanChatMember(bot.context.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
-                                    await ctx.reply(`[${args[0]}] not blocked, can re-enter!`)
-                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
+                                    await bot.context.reply(`[${args[0]}] not blocked, can re-enter!`)
+                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${bot.context.message.chat.title}`)
                                 })
                             }
-                            await bot.telegram.unbanChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.unbanChatMember(bot.context.chat.id, bot.context.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
-                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
-                                await ctx.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
-                                    reply_to_message_id: ctx.message.reply_to_message.message_id
+                                let replyUsername = bot.context.message.reply_to_message.from.username ? `@${bot.context.message.reply_to_message.from.username}` : `${bot.context.message.reply_to_message.from.first_name}`;
+                                let replyFromid = bot.context.message.reply_to_message.from.id ? `[${bot.context.message.reply_to_message.from.id}]` : "";
+                                await bot.context.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
+                                    reply_to_message_id: bot.context.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(ctx.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
+                                return await bot.telegram.sendMessage(bot.context.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${bot.context.message.chat.title}`)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        if(ctx.message.reply_to_message == undefined){
-                            let args = ctx.message.text.split(" ").slice(1)
-                            await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        if(bot.context.message.reply_to_message == undefined){
+                            let args = bot.context.message.text.split(" ").slice(1)
+                            await bot.telegram.unbanChatMember(bot.context.chat.id, Number(args[0])).then(async result =>{
                                 //console.log(result)
-                                await ctx.reply(`[${args[0]}] not blocked, can re-enter!`)
-                                return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
+                                await bot.context.reply(`[${args[0]}] not blocked, can re-enter!`)
+                                return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${bot.context.message.chat.title}`)
                             })
                         }
-                        await bot.telegram.unbanChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
+                        await bot.telegram.unbanChatMember(bot.context.chat.id, bot.context.message.reply_to_message.from.id).then(async result =>{
                             //console.log(result)
-                            let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
-                            let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
-                            await ctx.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
-                                reply_to_message_id: ctx.message.reply_to_message.message_id
+                            let replyUsername = bot.context.message.reply_to_message.from.username ? `@${bot.context.message.reply_to_message.from.username}` : `${bot.context.message.reply_to_message.from.first_name}`;
+                            let replyFromid = bot.context.message.reply_to_message.from.id ? `[${bot.context.message.reply_to_message.from.id}]` : "";
+                            await bot.context.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
+                                reply_to_message_id: bot.context.message.reply_to_message.message_id
                             })
-                            return await bot.telegram.sendMessage(ctx.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
+                            return await bot.telegram.sendMessage(bot.context.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${bot.context.message.chat.title}`)
                         })
                     }else{
-                        if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage(ctx.message.message_id)
-                            if(ctx.message.reply_to_message == undefined){
-                                let args = ctx.message.text.split(" ").slice(1)
-                                await bot.telegram.unbanChatMember(ctx.chat.id, Number(args[0])).then(async result =>{
+                        if(bot.context.from.username == 'GroupAnonymousBot'){
+                            await bot.context.deleteMessage(bot.context.message.message_id)
+                            if(bot.context.message.reply_to_message == undefined){
+                                let args = bot.context.message.text.split(" ").slice(1)
+                                await bot.telegram.unbanChatMember(bot.context.chat.id, Number(args[0])).then(async result =>{
                                     //console.log(result)
-                                    await ctx.reply(`[${args[0]}] not blocked, can re-enter!`)
-                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
+                                    await bot.context.reply(`[${args[0]}] not blocked, can re-enter!`)
+                                    return await bot.telegram.sendMessage(args[0], `You are not blocked, you can re-enter at ${bot.context.message.chat.title}`)
                                 })
                             }
-                            await bot.telegram.unbanChatMember(ctx.chat.id, ctx.message.reply_to_message.from.id).then(async result =>{
+                            await bot.telegram.unbanChatMember(bot.context.chat.id, bot.context.message.reply_to_message.from.id).then(async result =>{
                                 //console.log(result)
-                                let replyUsername = ctx.message.reply_to_message.from.username ? `@${ctx.message.reply_to_message.from.username}` : `${ctx.message.reply_to_message.from.first_name}`;
-                                let replyFromid = ctx.message.reply_to_message.from.id ? `[${ctx.message.reply_to_message.from.id}]` : "";
-                                await ctx.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
-                                    reply_to_message_id: ctx.message.reply_to_message.message_id
+                                let replyUsername = bot.context.message.reply_to_message.from.username ? `@${bot.context.message.reply_to_message.from.username}` : `${bot.context.message.reply_to_message.from.first_name}`;
+                                let replyFromid = bot.context.message.reply_to_message.from.id ? `[${bot.context.message.reply_to_message.from.id}]` : "";
+                                await bot.context.reply(`${replyUsername} ${replyFromid} not blocked, can re-enter!`,{
+                                    reply_to_message_id: bot.context.message.reply_to_message.message_id
                                 })
-                                return await bot.telegram.sendMessage(ctx.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${ctx.message.chat.title}`)
+                                return await bot.telegram.sendMessage(bot.context.message.reply_to_message.from.id, `You are not blocked, you can re-enter at ${bot.context.message.chat.title}`)
                             })
                         }
                     }
@@ -842,31 +842,31 @@ bot.command('pin',async(ctx)=>{
         }
         async function pin() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, bot.context.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, bot.context.from.id)
                 //console.log(memberstatus);
 
-                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+                if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
+                        await bot.context.deleteMessage(bot.context.message.message_id)
                         if(memberstatus.can_pin_messages == true){
-                            await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
+                            await bot.telegram.pinChatMessage(bot.context.chat.id, bot.context.message.reply_to_message.message_id,{
                                 disable_notification: false,
                             }).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        await bot.telegram.pinChatMessage(bot.context.chat.id, bot.context.message.reply_to_message.message_id,{
                             disable_notification: false,
                         }).then(async result =>{
                             //console.log(result)
                         })
                     }else{
-                        if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage(ctx.message.message_id)
-                            await bot.telegram.pinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id,{
+                        if(bot.context.from.username == 'GroupAnonymousBot'){
+                            await bot.context.deleteMessage(bot.context.message.message_id)
+                            await bot.telegram.pinChatMessage(bot.context.chat.id, bot.context.message.reply_to_message.message_id,{
                                 disable_notification: false,
                             }).then(async result =>{
                                 //console.log(result)
@@ -890,27 +890,27 @@ bot.command('unpin',async(ctx)=>{
         }
         async function unpin() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, bot.context.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, bot.context.from.id)
                 //console.log(memberstatus);
 
-                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+                if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
                     if(memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
+                        await bot.context.deleteMessage(bot.context.message.message_id)
                         if(memberstatus.can_pin_messages == true){
-                            await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
+                            await bot.telegram.unpinChatMessage(bot.context.chat.id, bot.context.message.reply_to_message.message_id).then(async result =>{
                                 //console.log(result)
                             })
                         }
                     }else if(memberstatus.status == 'creator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        await bot.telegram.unpinChatMessage(bot.context.chat.id, bot.context.message.reply_to_message.message_id).then(async result =>{
                             //console.log(result)
                         })
                     }else{
-                        if(ctx.from.username == 'GroupAnonymousBot'){
-                            await ctx.deleteMessage(ctx.message.message_id)
-                            await bot.telegram.unpinChatMessage(ctx.chat.id, ctx.message.reply_to_message.message_id).then(async result =>{
+                        if(bot.context.from.username == 'GroupAnonymousBot'){
+                            await bot.context.deleteMessage(bot.context.message.message_id)
+                            await bot.telegram.unpinChatMessage(bot.context.chat.id, bot.context.message.reply_to_message.message_id).then(async result =>{
                                 //console.log(result)
                             })
                         }
@@ -932,47 +932,47 @@ bot.command('send',async(ctx)=>{
         }
         async function send() {
             for (const group of groupId) {
-                var botStatus2 = await bot.telegram.getChatMember(group, ctx.botInfo.id)
-                var memberstatus = await bot.telegram.getChatMember(group, ctx.from.id)
+                var botStatus2 = await bot.telegram.getChatMember(group, bot.context.botInfo.id)
+                var memberstatus = await bot.telegram.getChatMember(group, bot.context.from.id)
                 //console.log(memberstatus);
 
-                if(ctx.chat.type == 'group' || ctx.chat.type == 'supergroup') {
+                if(bot.context.chat.type == 'group' || bot.context.chat.type == 'supergroup') {
                     if(memberstatus.status == 'creator' || memberstatus.status == 'administrator'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        if(ctx.message.reply_to_message == undefined){
-                            const str = ctx.message.text;
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        if(bot.context.message.reply_to_message == undefined){
+                            const str = bot.context.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const caption = words.join(" ");
     
                             return await bot.telegram.sendMessage(group, `${caption}`)
                         }
-                        const str = ctx.message.text;
+                        const str = bot.context.message.text;
                         const words = str.split(/ +/g);
                         const command = words.shift().slice(1);
                         const caption = words.join(" ");
 
                         return await bot.telegram.sendMessage(group, `${caption}`,{
-                            reply_to_message_id: ctx.message.reply_to_message.message_id
+                            reply_to_message_id: bot.context.message.reply_to_message.message_id
                         })
                     }
-                    if(ctx.from.username == 'GroupAnonymousBot'){
-                        await ctx.deleteMessage(ctx.message.message_id)
-                        if(ctx.message.reply_to_message == undefined){
-                            const str = ctx.message.text;
+                    if(bot.context.from.username == 'GroupAnonymousBot'){
+                        await bot.context.deleteMessage(bot.context.message.message_id)
+                        if(bot.context.message.reply_to_message == undefined){
+                            const str = bot.context.message.text;
                             const words = str.split(/ +/g);
                             const command = words.shift().slice(1);
                             const caption = words.join(" ");
     
                             return await bot.telegram.sendMessage(group, `${caption}`)
                         }
-                        const str = ctx.message.text;
+                        const str = bot.context.message.text;
                         const words = str.split(/ +/g);
                         const command = words.shift().slice(1);
                         const caption = words.join(" ");
 
                         return await bot.telegram.sendMessage(group, `${caption}`,{
-                            reply_to_message_id: ctx.message.reply_to_message.message_id
+                            reply_to_message_id: bot.context.message.reply_to_message.message_id
                         })
                     }
                 }
@@ -986,24 +986,24 @@ bot.command('send',async(ctx)=>{
 
 //check account
 bot.command('getid',async(ctx)=>{
-    if(ctx.chat.type == 'private') {       
-        const profile4 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
-        await saver.checkBan(`${ctx.from.id}`).then(async res => {
+    if(bot.context.chat.type == 'private') {       
+        const profile4 = await bot.telegram.getUserProfilePhotos(bot.context.from.id)
+        await saver.checkBan(`${bot.context.from.id}`).then(async res => {
             //console.log(res);
             if(res == true) {
-                if(ctx.chat.type == 'private') {
-                    await ctx.deleteMessage(ctx.message.message_id)
-                    await ctx.reply(`${messagebanned(ctx)}`)
+                if(bot.context.chat.type == 'private') {
+                    await bot.context.deleteMessage(bot.context.message.message_id)
+                    await bot.context.reply(`${messagebanned(ctx)}`)
                 }
             }else{
                 if(!profile4 || profile4.total_count == 0){
-                    await ctx.deleteMessage(ctx.message.message_id)
-                    await ctx.reply(`<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${ctx.from.id}`,{
+                    await bot.context.deleteMessage(bot.context.message.message_id)
+                    await bot.context.reply(`<b>Name:</b> <a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${bot.context.from.id}`,{
                         parse_mode:'HTML'  
                     })
                 }else{
-                    await ctx.deleteMessage(ctx.message.message_id)
-                    await ctx.replyWithPhoto(profile4.photos[0][0].file_id,{caption: `<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${ctx.from.id}`,
+                    await bot.context.deleteMessage(bot.context.message.message_id)
+                    await bot.context.replyWithPhoto(profile4.photos[0][0].file_id,{caption: `<b>Name:</b> <a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n<b>Username:</b> ${username(ctx)}\n<b>ID:</b> ${bot.context.from.id}`,
                         parse_mode:'HTML'
                     })
                 }
@@ -1015,64 +1015,64 @@ bot.command('getid',async(ctx)=>{
 
 //remove files with file_id
 bot.command('rem', async(ctx) => {
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text2 = msgArray.join(' ')
         let text = `${text2}`.replace(/_/g, '-');
         console.log(text);
 
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage(ctx.message.message_id)
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.deleteMessage(bot.context.message.message_id)
             saver.removeFile(text)
-            await ctx.reply('❌ 1 media deleted successfully')
+            await bot.context.reply('❌ 1 media deleted successfully')
         }
     }
     
 })
 
 bot.command('remgrp', async(ctx) => {
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let media = msgArray.join(' ')
         //console.log(media);
 
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage(ctx.message.message_id)
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.deleteMessage(bot.context.message.message_id)
             saver.removeFileMedia(media)
-            await ctx.reply('❌ Media group deleted successfully')
+            await bot.context.reply('❌ Media group deleted successfully')
         }
     }
 })
 
 //remove whole collection(remove all files)
 bot.command('clear', async(ctx)=>{
-    if(ctx.chat.type == 'private') {
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage(ctx.message.message_id)
+    if(bot.context.chat.type == 'private') {
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.deleteMessage(bot.context.message.message_id)
             await saver.deleteCollection()
-            await ctx.reply('❌ All media deleted successfully')
+            await bot.context.reply('❌ All media deleted successfully')
         }
     }
 })
 
 //removing all files sent by a user
 bot.command('remall', async(ctx) => {
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text = msgArray.join(' ')
         //console.log(text);
         let id = parseInt(text)
 
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.deleteMessage(ctx.message.message_id)
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.deleteMessage(bot.context.message.message_id)
             await saver.removeUserFile(id)
-            await ctx.reply('❌ Delete all user media successfully')
+            await bot.context.reply('❌ Delete all user media successfully')
         }
     }
     
@@ -1080,8 +1080,8 @@ bot.command('remall', async(ctx) => {
 
 //broadcasting message to bot users(from last joined to first)
 bot.command('broadcast',async(ctx)=>{
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text = msgArray.join(' ')
@@ -1111,20 +1111,20 @@ bot.command('broadcast',async(ctx)=>{
 
                     }
                 }
-                await ctx.reply(`✅ <b>Number of active users:</b> ${userId.length - totalFail.length}\n❌ <b>Total failed broadcasts:</b> ${totalFail.length}`,{
+                await bot.context.reply(`✅ <b>Number of active users:</b> ${userId.length - totalFail.length}\n❌ <b>Total failed broadcasts:</b> ${totalFail.length}`,{
                     parse_mode:'HTML'
                 })
 
             }
 
-            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                await ctx.deleteMessage(ctx.message.message_id)
+            if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+                await bot.context.deleteMessage(bot.context.message.message_id)
                 broadcast(text)
-                await ctx.reply('Broadcast starts (Message is broadcast from last joined to first).')
+                await bot.context.reply('Broadcast starts (Message is broadcast from last joined to first).')
 
             }else{
-                await ctx.deleteMessage(ctx.message.message_id)
-                await ctx.reply(`Commands can only be used by Admin.`) 
+                await bot.context.deleteMessage(bot.context.message.message_id)
+                await bot.context.reply(`Commands can only be used by Admin.`) 
             }
 
         })
@@ -1134,8 +1134,8 @@ bot.command('broadcast',async(ctx)=>{
 
 //ban user with user id
 bot.command('banchat', async(ctx) => {
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         msgArray.shift()
         let text = msgArray.join(' ')
@@ -1144,11 +1144,11 @@ bot.command('banchat', async(ctx) => {
             id: text
         }
 
-        if(ctx.chat.type == 'private') {
-            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                await ctx.deleteMessage(ctx.message.message_id)
+        if(bot.context.chat.type == 'private') {
+            if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+                await bot.context.deleteMessage(bot.context.message.message_id)
                 await saver.banUser(userId).then(async res => {
-                    await ctx.reply('❌ Banned')
+                    await bot.context.reply('❌ Banned')
                 })
             }
         }
@@ -1158,8 +1158,8 @@ bot.command('banchat', async(ctx) => {
 
 //unban user with user id
 bot.command('unbanchat', async(ctx) => {
-    if(ctx.chat.type == 'private') {
-        const msg = ctx.message.text
+    if(bot.context.chat.type == 'private') {
+        const msg = bot.context.message.text
         let msgArray = msg.split(' ')
         msgArray.shift();
         let text = msgArray.join(' ')
@@ -1168,11 +1168,11 @@ bot.command('unbanchat', async(ctx) => {
             id: text
         }
 
-        if(ctx.chat.type == 'private') {
-            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                await ctx.deleteMessage(ctx.message.message_id)
+        if(bot.context.chat.type == 'private') {
+            if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+                await bot.context.deleteMessage(bot.context.message.message_id)
                 await saver.unBan(userId).then(async res => {
-                    await ctx.reply('✅ Finished')
+                    await bot.context.reply('✅ Finished')
                 })
             }
         }
@@ -1181,11 +1181,11 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 bot.on('message', ctx => {
-    const { video, photo, document } = ctx.message
+    const { video, photo, document } = bot.context.message
     if (video || photo || document) {
         // add context to queue if video, photo or document exists
         files.add({
-            ctx: ctx.update
+            ctx: bot.context.update
         })
     }
 })
@@ -1193,21 +1193,21 @@ bot.on('message', ctx => {
 // process files
 files.process(async job => processFiles(job.data.ctx))
 async function processFiles (ctx) {
-    if (ctx.message.document) {  
-        if(ctx.chat.type == 'private') {
-            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const document = ctx.message.document
+    if (bot.context.message.document) {  
+        if(bot.context.chat.type == 'private') {
+            if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+                const document = bot.context.message.document
     
-                if(ctx.message.media_group_id == undefined){
+                if(bot.context.message.media_group_id == undefined){
                     var tag = `✔️ Document save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(document.file_name == undefined){
                         var file_name2 = `${today2(ctx)}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }else{
                         var exstension2 = document.file_name;
@@ -1215,22 +1215,22 @@ async function processFiles (ctx) {
                         var doctext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${doctext2}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${ctx.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${bot.context.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${bot.context.message.media_group_id}`;
                     if(document.file_name == undefined){
                         var file_name2 = `${today2(ctx)}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }else{
                         var exstension2 = document.file_name;
@@ -1238,10 +1238,10 @@ async function processFiles (ctx) {
                         var doctext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${doctext2}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }
                 }
@@ -1249,28 +1249,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${document.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await ctx.reply(`File already exists.`,{
-                            reply_to_message_id: ctx.message.message_id
+                        await bot.context.reply(`File already exists.`,{
+                            reply_to_message_id: bot.context.message.message_id
                         })
                     }else{
-                        await ctx.replyWithDocument(document.file_id, {
-                            chat_id: ctx.chat.id,
+                        await bot.context.replyWithDocument(document.file_id, {
+                            chat_id: bot.context.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: ctx.message.message_id
+                            reply_to_message_id: bot.context.message.message_id
                         })
-                        await ctx.replyWithDocument(document.file_id, {
+                        await bot.context.replyWithDocument(document.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${bot.context.from.id}\n<b>Name:</b> <a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: ctx.from.id,
+                            userId: bot.context.from.id,
                             file_id: document.file_id,
-                            mediaId: ctx.message.media_group_id,
-                            caption: ctx.message.caption,
+                            mediaId: bot.context.message.media_group_id,
+                            caption: bot.context.message.caption,
                             file_size: document.file_size,
                             uniqueId: document.file_unique_id,
                             type: 'document'
@@ -1280,21 +1280,21 @@ async function processFiles (ctx) {
                 })
             }
         }
-    } else if (ctx.message.video) {
-        if(ctx.chat.type == 'private') {
-            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const video = ctx.message.video
+    } else if (bot.context.message.video) {
+        if(bot.context.chat.type == 'private') {
+            if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+                const video = bot.context.message.video
         
-                if(ctx.message.media_group_id == undefined){
+                if(bot.context.message.media_group_id == undefined){
                     var tag = `✔️ Video save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(video.file_name == undefined){
                         var file_name2 = `${today2(ctx)}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }else{
                         var exstension2 = video.file_name;
@@ -1302,22 +1302,22 @@ async function processFiles (ctx) {
                         var vidtext2 = exstension2.replace(regex2, '');
             
                         var file_name2 = `${vidtext2}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${ctx.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${bot.context.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${bot.context.message.media_group_id}`;
                     if(video.file_name == undefined){
                         var file_name2 = `${today2(ctx)}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }else{
                         var exstension2 = video.file_name;
@@ -1325,10 +1325,10 @@ async function processFiles (ctx) {
                         var vidtext2 = exstension2.replace(regex2, '');
             
                         var file_name2 = `${vidtext2}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }
                 }
@@ -1336,28 +1336,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${video.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await ctx.reply(`File already exists.`,{
-                            reply_to_message_id: ctx.message.message_id
+                        await bot.context.reply(`File already exists.`,{
+                            reply_to_message_id: bot.context.message.message_id
                         })
                     }else{
-                        await ctx.replyWithVideo(video.file_id, {
-                            chat_id: ctx.chat.id,
+                        await bot.context.replyWithVideo(video.file_id, {
+                            chat_id: bot.context.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: ctx.message.message_id
+                            reply_to_message_id: bot.context.message.message_id
                         })
-                        await ctx.replyWithVideo(video.file_id, {
+                        await bot.context.replyWithVideo(video.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${bot.context.from.id}\n<b>Name:</b> <a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: ctx.from.id,
+                            userId: bot.context.from.id,
                             file_id: video.file_id,
-                            mediaId: ctx.message.media_group_id,
-                            caption: ctx.message.caption,
+                            mediaId: bot.context.message.media_group_id,
+                            caption: bot.context.message.caption,
                             file_size: video.file_size,
                             uniqueId: video.file_unique_id,
                             type: 'video'
@@ -1367,21 +1367,21 @@ async function processFiles (ctx) {
                 })
             }
         }
-    } else if (ctx.message.photo[1]) {
-        if(ctx.chat.type == 'private') {
-            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-                const photo = ctx.message.photo[1]
+    } else if (bot.context.message.photo[1]) {
+        if(bot.context.chat.type == 'private') {
+            if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+                const photo = bot.context.message.photo[1]
     
-                if(ctx.message.media_group_id == undefined){
+                if(bot.context.message.media_group_id == undefined){
                     var tag = `✔️ Photo save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(photo.file_name == undefined){
                         var file_name2 = `${today2(ctx)}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }else{
                         var exstension2 = photo.file_name;
@@ -1389,22 +1389,22 @@ async function processFiles (ctx) {
                         var photext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${photext2}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${ctx.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${bot.context.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${bot.context.message.media_group_id}`;
                     if(photo.file_name == undefined){
                         var file_name2 = `${today2(ctx)}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }else{
                         var exstension2 = photo.file_name;
@@ -1412,10 +1412,10 @@ async function processFiles (ctx) {
                         var photext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${photext2}`;
-                        if(ctx.message.caption == undefined){
+                        if(bot.context.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${ctx.message.caption}`;
+                            var caption2 =  `\n\n${bot.context.message.caption}`;
                         }
                     }
                 }
@@ -1423,28 +1423,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${photo.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await ctx.reply(`File already exists.`,{
-                            reply_to_message_id: ctx.message.message_id
+                        await bot.context.reply(`File already exists.`,{
+                            reply_to_message_id: bot.context.message.message_id
                         })
                     }else{
-                        await ctx.replyWithPhoto(photo.file_id, {
-                            chat_id: ctx.chat.id,
+                        await bot.context.replyWithPhoto(photo.file_id, {
+                            chat_id: bot.context.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: ctx.message.message_id
+                            reply_to_message_id: bot.context.message.message_id
                         })
-                        await ctx.replyWithPhoto(photo.file_id, {
+                        await bot.context.replyWithPhoto(photo.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${bot.context.from.id}\n<b>Name:</b> <a href="tg://user?id=${bot.context.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: ctx.from.id,
+                            userId: bot.context.from.id,
                             file_id: photo.file_id,
-                            mediaId: ctx.message.media_group_id,
-                            caption: ctx.message.caption,
+                            mediaId: bot.context.message.media_group_id,
+                            caption: bot.context.message.caption,
                             file_size: photo.file_size,
                             uniqueId: photo.file_unique_id,
                             type: 'photo'
@@ -1458,25 +1458,25 @@ async function processFiles (ctx) {
 }
 
 bot.command('stats',async(ctx)=>{
-    await ctx.deleteMessage(ctx.message.message_id)
+    await bot.context.deleteMessage(bot.context.message.message_id)
     const stats1 = await saver.getUser().then(async res=>{
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.reply(`📊 Total users: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.reply(`📊 Total users: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
     const stats2 = await saver.getMedia().then(async res=>{
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.reply(`📊 Total media: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.reply(`📊 Total media: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
     const stats3 = await saver.getBan().then(async res=>{
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.reply(`📊 Total users violate: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.reply(`📊 Total users violate: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
     const stats4 = await saver.getGroup().then(async res=>{
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            await ctx.reply(`📊 Total registered groups: <b>${res.length}</b>`,{parse_mode:'HTML'})
+        if(bot.context.from.id == Number(process.env.ADMIN) || bot.context.from.id == Number(process.env.ADMIN1) || bot.context.from.id == Number(process.env.ADMIN2)){
+            await bot.context.reply(`📊 Total registered groups: <b>${res.length}</b>`,{parse_mode:'HTML'})
         }
     })
 })
