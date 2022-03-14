@@ -3,9 +3,7 @@ const Queue = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 const files = new Queue('files');
-const bot = new Telegraf(process.env.TOKEN, {
-    handlerTimeout: 90_000,
-});
+const bot = new Telegraf(process.env.TOKEN);
 
 process.env.TZ = "Asia/Jakarta";
 
@@ -1187,7 +1185,7 @@ bot.on('message', ctx => {
     if (video || photo || document) {
         // add context to queue if video, photo or document exists
         files.add({
-            ctx
+            ctx: ctx.update
         })
     }
 })
