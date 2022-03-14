@@ -1,5 +1,5 @@
 require('dotenv').config();
-const Queue = require('bull');
+const { Queue } = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 
