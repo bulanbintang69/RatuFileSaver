@@ -1,9 +1,9 @@
 require('dotenv').config();
-const { Telegraf } = require('telegraf');
 const Queue = require('bull');
+const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
+const files = new Queue('files');
 const bot = new Telegraf(process.env);
-const files = new Queue('files')
 
 process.env.TZ = "Asia/Jakarta";
 
