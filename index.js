@@ -1183,17 +1183,15 @@ bot.command('unbanchat', async(ctx) => {
 //saving file
 const media = []
 bot.on(['document', 'video', 'photo'], ctx => {
-    const document = ctx
-    const video = ctx
-    const photo = ctx
-    if(document){
-        media.push(document)
+    const element = ctx
+    if(element.message.document){
+        media.push(element.message.document)
         startDocProcessing(ctx);
-    }else if(video) {
-        media.push(video)
+    }else if(element.message.video) {
+        media.push(element.message.video)
         startDocProcessing(ctx);
-    }else if(photo) {
-        media.push(photo)
+    }else if(element.message.photo[1]) {
+        media.push(element.message.photo[1])
         startDocProcessing(ctx);
     }
 })
