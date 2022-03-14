@@ -3,7 +3,9 @@ const Queue = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 const files = new Queue('files');
-const bot = new Telegraf(process.env.TOKEN);
+const bot = new Telegraf(process.env.TOKEN, {
+    handlerTimeout: 90_000,
+});
 
 process.env.TZ = "Asia/Jakarta";
 
