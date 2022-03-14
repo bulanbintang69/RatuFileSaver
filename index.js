@@ -1,10 +1,9 @@
 require('dotenv').config();
-const Queue = require('bull');
 const { Telegraf } = require('telegraf');
+const Queue = require('bull');
 const crypto = require('crypto');
-
-const files = new Queue('files')
 const bot = new Telegraf(process.env);
+const files = new Queue('files')
 
 process.env.TZ = "Asia/Jakarta";
 
@@ -1193,9 +1192,6 @@ bot.on('message', ctx => {
   
 // process files
 files.process(async job => processFiles(job.data.ctx))
-
-// your code
-
 async function processFiles (ctx) {
     const array1 = [ctx];
     const element = array1.shift();
