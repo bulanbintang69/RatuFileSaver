@@ -1299,7 +1299,7 @@ async function upload (ctx,doc) {
     }
 }
 
-async function upload2 (vid) {
+async function upload2 (ctx,vid) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
@@ -1393,7 +1393,7 @@ async function upload2 (vid) {
     }
 }
 
-async function upload3 (phot) {
+async function upload3 (ctx,phot) {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
