@@ -3,7 +3,7 @@ const Queue = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 const files = new Queue('files');
-const bot = new Telegraf(process.env);
+const bot = new Telegraf(process.env.TOKEN);
 
 process.env.TZ = "Asia/Jakarta";
 
