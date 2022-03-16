@@ -1182,15 +1182,15 @@ bot.command('unbanchat', async(ctx) => {
 
 //saving file
 bot.on(['document', 'video', 'photo'], async(ctx,next) => {
+    await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2000);
+    });
     const array1 = [ctx];
     const element = array1.shift();
     //console.log(element);
     if (element.message.document) {  
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              return resolve("Result");
-            }, 2000);
-        });
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
                 const document = element.message.document
@@ -1277,13 +1277,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 })
             }
         }
-        return next();
     } else if (element.message.video) {
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              return resolve("Result");
-            }, 2000);
-        });
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
                 const video = element.message.video
@@ -1370,13 +1364,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 })
             }
         }
-        return next();
     } else if (element.message.photo[1]) {
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              return resolve("Result");
-            }, 2000);
-        });
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
                 const photo = element.message.photo[1]
@@ -1463,8 +1451,8 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 })
             }
         }
-        return next();
     }
+    return next();
 })
 
 bot.command('stats',async(ctx)=>{
