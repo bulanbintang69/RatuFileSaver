@@ -1189,7 +1189,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
-            }, 2_000);
+            }, 2000);
         });
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
@@ -1282,7 +1282,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
-            }, 2_000);
+            }, 2000);
         });
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
@@ -1375,7 +1375,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
         await new Promise((resolve, reject) => {
             setTimeout(() => {
               return resolve("Result");
-            }, 2_000);
+            }, 2000);
         });
         if(element.chat.type == 'private') {
             if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
