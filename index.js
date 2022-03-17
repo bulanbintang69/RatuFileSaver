@@ -1,11 +1,11 @@
 require('dotenv').config();
-const Queue = require('bull');
 const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 
 let reply, replyWithDocument, replyWithPhoto, replyWithVideo
-const files = new Queue('files') // create queue
-const bot = new Telegraf(process.env.TOKEN);
+const bot = new Telegraf(process.env.TOKEN, {
+   handlerTimeout: 90_000,
+});
 
 process.env.TZ = "Asia/Jakarta";
 
@@ -100,22 +100,13 @@ const inKey2 = [
     [{text: `${url3}`, url: `${url4}`}]
 ];
 
-bot.on('message', ctx => {
+//BOT START
+bot.start(async(ctx)=>{
     reply = ctx.reply
     replyWithDocument = ctx.replyWithDocument
     replyWithPhoto = ctx.replyWithPhoto
     replyWithVideo = ctx.replyWithVideo
-    const { video, photo, document } = ctx.message
-    if (video || photo || document) {
-        // add context to queue if video, photo or document exists
-        files.add({
-            ctx
-        })
-    }
-})
 
-//BOT START
-bot.start(async(ctx)=>{
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -405,6 +396,11 @@ bot.start(async(ctx)=>{
 
 //DEFINING POP CALLBACK
 bot.action('POP', async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage()
     await reply(`${messagelink(ctx)}`,{
         parse_mode: 'HTML',
@@ -418,6 +414,11 @@ bot.action('POP', async(ctx)=>{
 
 //DEFINING DOC CALLBACK
 bot.action('DOC', async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage()
     await reply(`${documentation(ctx)}`,{
         parse_mode: 'HTML',
@@ -430,6 +431,11 @@ bot.action('DOC', async(ctx)=>{
 })
 
 bot.action('SRC', async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage()
     await reply(`${helpcommand.botsrc}`,{
         parse_mode: 'HTML',
@@ -443,6 +449,11 @@ bot.action('SRC', async(ctx)=>{
 })
 
 bot.action('HELP',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage()
     await reply(`${helpcommand.bothelp}`,{
         parse_mode: 'HTML',
@@ -457,6 +468,11 @@ bot.action('HELP',async(ctx)=>{
 })
 
 bot.action('COMM', async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage()
     await reply(`${helpcommand.botcommand}`,{
         parse_mode: 'HTML',
@@ -470,6 +486,11 @@ bot.action('COMM', async(ctx)=>{
 })
 
 bot.action('STARTUP', async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage()
     const profile = await bot.telegram.getUserProfilePhotos(ctx.from.id)
     if(!profile || profile.total_count == 0)
@@ -491,6 +512,11 @@ bot.action('STARTUP', async(ctx)=>{
 
 //TEST BOT
 bot.hears(/ping/i,async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+    
     if(ctx.chat.type == 'private') {    
         await saver.checkBan(`${ctx.from.id}`).then(async res => {
             //console.log(res);
@@ -519,6 +545,11 @@ bot.action('PONG',async(ctx)=>{
 
 //GROUP COMMAND
 bot.command('reload',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     var botStatus2 = await bot.telegram.getChatMember(ctx.chat.id, ctx.botInfo.id)
     var memberstatus = await bot.telegram.getChatMember(ctx.chat.id, ctx.from.id)
     //console.log(memberstatus);
@@ -541,6 +572,11 @@ bot.command('reload',async(ctx)=>{
 })
 
 bot.command('kick',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     const groupDetails = await saver.getGroup().then(async res=>{
         const n = res.length
         const groupId = []
@@ -601,6 +637,11 @@ bot.command('kick',async(ctx)=>{
 })
 
 bot.command('ban',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     const groupDetails = await saver.getGroup().then(async res => {
         const n = res.length
         const groupId = []
@@ -766,6 +807,11 @@ bot.command('ban',async(ctx)=>{
 })
 
 bot.command('unban',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     const groupDetails = await saver.getGroup().then(async res => {
         const n = res.length
         const groupId = []
@@ -850,6 +896,11 @@ bot.command('unban',async(ctx)=>{
 })
 
 bot.command('pin',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     const groupDetails = await saver.getGroup().then(async res =>{
         const n = res.length
         const groupId = []
@@ -898,6 +949,11 @@ bot.command('pin',async(ctx)=>{
 })
 
 bot.command('unpin',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     const groupDetails = await saver.getGroup().then( async res=>{
         const n = res.length
         const groupId = []
@@ -940,6 +996,11 @@ bot.command('unpin',async(ctx)=>{
 })
 
 bot.command('send',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     const groupDetails = await saver.getGroup().then(async res =>{
         const n = res.length
         const groupId = []
@@ -1002,6 +1063,11 @@ bot.command('send',async(ctx)=>{
 
 //check account
 bot.command('getid',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {       
         const profile4 = await bot.telegram.getUserProfilePhotos(ctx.from.id)
         await saver.checkBan(`${ctx.from.id}`).then(async res => {
@@ -1031,6 +1097,11 @@ bot.command('getid',async(ctx)=>{
 
 //remove files with file_id
 bot.command('rem', async(ctx) => {
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1049,6 +1120,11 @@ bot.command('rem', async(ctx) => {
 })
 
 bot.command('remgrp', async(ctx) => {
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1066,6 +1142,11 @@ bot.command('remgrp', async(ctx) => {
 
 //remove whole collection(remove all files)
 bot.command('clear', async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
             await ctx.deleteMessage(ctx.message.message_id)
@@ -1077,6 +1158,11 @@ bot.command('clear', async(ctx)=>{
 
 //removing all files sent by a user
 bot.command('remall', async(ctx) => {
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1096,6 +1182,11 @@ bot.command('remall', async(ctx) => {
 
 //broadcasting message to bot users(from last joined to first)
 bot.command('broadcast',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1150,6 +1241,11 @@ bot.command('broadcast',async(ctx)=>{
 
 //ban user with user id
 bot.command('banchat', async(ctx) => {
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1174,6 +1270,11 @@ bot.command('banchat', async(ctx) => {
 
 //unban user with user id
 bot.command('unbanchat', async(ctx) => {
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     if(ctx.chat.type == 'private') {
         const msg = ctx.message.text
         let msgArray = msg.split(' ')
@@ -1196,30 +1297,36 @@ bot.command('unbanchat', async(ctx) => {
     
 })
 
-// process files
-files.process(async job => processFiles(job.data.ctx))
-
-// your code
-
-async function processFiles (ctx) {
+//saving file
+bot.on(['document', 'video', 'photo'], async(ctx,next) => {
+    await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2000);
+    });
     const array1 = [ctx];
     const element = array1.shift();
+    reply = element.reply
+    replyWithDocument = element.replyWithDocument
+    replyWithPhoto = element.replyWithPhoto
+    replyWithVideo = element.replyWithVideo
     //console.log(element);
-    if (element.message.document) {  
-        if(element.chat.type == 'private') {
-            if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
-                const document = element.message.document
+
+    if (ctx.message.document) {  
+        if(ctx.chat.type == 'private') {
+            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+                const document = ctx.message.document
     
-                if(element.message.media_group_id == undefined){
+                if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Document save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(document.file_name == undefined){
                         var file_name2 = `${today2(element)}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }else{
                         var exstension2 = document.file_name;
@@ -1227,22 +1334,22 @@ async function processFiles (ctx) {
                         var doctext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${doctext2}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${element.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${element.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${ctx.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`;
                     if(document.file_name == undefined){
                         var file_name2 = `${today2(element)}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }else{
                         var exstension2 = document.file_name;
@@ -1250,10 +1357,10 @@ async function processFiles (ctx) {
                         var doctext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${doctext2}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }
                 }
@@ -1261,28 +1368,28 @@ async function processFiles (ctx) {
                 await saver.checkFile(`${document.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await reply(`File already exists.`,{ // <-- check this
-                            reply_to_message_id: element.message.message_id
+                        await reply(`File already exists.`,{
+                            reply_to_message_id: ctx.message.message_id
                         })
                     }else{
                         await replyWithDocument(document.file_id, {
-                            chat_id: element.chat.id,
+                            chat_id: ctx.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: element.message.message_id
+                            reply_to_message_id: ctx.message.message_id
                         })
                         await replyWithDocument(document.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: element.from.id,
+                            userId: ctx.from.id,
                             file_id: document.file_id,
-                            mediaId: element.message.media_group_id,
-                            caption: element.message.caption,
+                            mediaId: ctx.message.media_group_id,
+                            caption: ctx.message.caption,
                             file_size: document.file_size,
                             uniqueId: document.file_unique_id,
                             type: 'document'
@@ -1292,21 +1399,21 @@ async function processFiles (ctx) {
                 })
             }
         }
-    } else if (element.message.video) {
-        if(element.chat.type == 'private') {
-            if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
-                const video = element.message.video
+    } else if (ctx.message.video) {
+        if(ctx.chat.type == 'private') {
+            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+                const video = ctx.message.video
         
-                if(element.message.media_group_id == undefined){
+                if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Video save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(video.file_name == undefined){
                         var file_name2 = `${today2(element)}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }else{
                         var exstension2 = video.file_name;
@@ -1314,22 +1421,22 @@ async function processFiles (ctx) {
                         var vidtext2 = exstension2.replace(regex2, '');
             
                         var file_name2 = `${vidtext2}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${element.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${element.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${ctx.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`;
                     if(video.file_name == undefined){
                         var file_name2 = `${today2(element)}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }else{
                         var exstension2 = video.file_name;
@@ -1337,10 +1444,10 @@ async function processFiles (ctx) {
                         var vidtext2 = exstension2.replace(regex2, '');
             
                         var file_name2 = `${vidtext2}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }
                 }
@@ -1349,27 +1456,27 @@ async function processFiles (ctx) {
                     //console.log(res);
                     if(res == true) {
                         await reply(`File already exists.`,{
-                            reply_to_message_id: element.message.message_id
+                            reply_to_message_id: ctx.message.message_id
                         })
                     }else{
                         await replyWithVideo(video.file_id, {
-                            chat_id: element.chat.id,
+                            chat_id: ctx.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: element.message.message_id
+                            reply_to_message_id: ctx.message.message_id
                         })
                         await replyWithVideo(video.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: element.from.id,
+                            userId: ctx.from.id,
                             file_id: video.file_id,
-                            mediaId: element.message.media_group_id,
-                            caption: element.message.caption,
+                            mediaId: ctx.message.media_group_id,
+                            caption: ctx.message.caption,
                             file_size: video.file_size,
                             uniqueId: video.file_unique_id,
                             type: 'video'
@@ -1379,21 +1486,21 @@ async function processFiles (ctx) {
                 })
             }
         }
-    } else if (element.message.photo[1]) {
-        if(element.chat.type == 'private') {
-            if(element.from.id == Number(process.env.ADMIN) || element.from.id == Number(process.env.ADMIN1) || element.from.id == Number(process.env.ADMIN2)){
-                const photo = element.message.photo[1]
+    } else if (ctx.message.photo[1]) {
+        if(ctx.chat.type == 'private') {
+            if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+                const photo = ctx.message.photo[1]
     
-                if(element.message.media_group_id == undefined){
+                if(ctx.message.media_group_id == undefined){
                     var tag = `✔️ Photo save`;
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(photo.file_name == undefined){
                         var file_name2 = `${today2(element)}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }else{
                         var exstension2 = photo.file_name;
@@ -1401,22 +1508,22 @@ async function processFiles (ctx) {
                         var photext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${photext2}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }
                 }else{
                     var tag = `✔️ Group save`;
-                    var mediaId = `\n<b>Media ID</b>: ${element.message.media_group_id}`;
-                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${element.message.media_group_id}`;
+                    var mediaId = `\n<b>Media ID</b>: ${ctx.message.media_group_id}`;
+                    var mediaId2 = `\nhttps://t.me/${process.env.BOTUSERNAME}?start=grp_${ctx.message.media_group_id}`;
                     if(photo.file_name == undefined){
                         var file_name2 = `${today2(element)}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }else{
                         var exstension2 = photo.file_name;
@@ -1424,10 +1531,10 @@ async function processFiles (ctx) {
                         var photext2 = exstension2.replace(regex2, '');
                         
                         var file_name2 = `${photext2}`;
-                        if(element.message.caption == undefined){
+                        if(ctx.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
-                            var caption2 =  `\n\n${element.message.caption}`;
+                            var caption2 =  `\n\n${ctx.message.caption}`;
                         }
                     }
                 }
@@ -1436,27 +1543,27 @@ async function processFiles (ctx) {
                     //console.log(res);
                     if(res == true) {
                         await reply(`File already exists.`,{
-                            reply_to_message_id: element.message.message_id
+                            reply_to_message_id: ctx.message.message_id
                         })
                     }else{
                         await replyWithPhoto(photo.file_id, {
-                            chat_id: element.chat.id,
+                            chat_id: ctx.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                            reply_to_message_id: element.message.message_id
+                            reply_to_message_id: ctx.message.message_id
                         })
                         await replyWithPhoto(photo.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
-                            caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
+                            caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
                         })
                         const fileDetails1 = {
                             file_name: file_name2,
-                            userId: element.from.id,
+                            userId: ctx.from.id,
                             file_id: photo.file_id,
-                            mediaId: element.message.media_group_id,
-                            caption: element.message.caption,
+                            mediaId: ctx.message.media_group_id,
+                            caption: ctx.message.caption,
                             file_size: photo.file_size,
                             uniqueId: photo.file_unique_id,
                             type: 'photo'
@@ -1467,9 +1574,15 @@ async function processFiles (ctx) {
             }
         }
     }
-}
+    return next();
+})
 
 bot.command('stats',async(ctx)=>{
+    reply = ctx.reply
+    replyWithDocument = ctx.replyWithDocument
+    replyWithPhoto = ctx.replyWithPhoto
+    replyWithVideo = ctx.replyWithVideo
+
     await ctx.deleteMessage(ctx.message.message_id)
     const stats1 = await saver.getUser().then(async res=>{
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
