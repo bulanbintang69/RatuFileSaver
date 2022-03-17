@@ -109,7 +109,7 @@ bot.on('message', ctx => {
     if (video || photo || document) {
         // add context to queue if video, photo or document exists
         files.add({
-            ctx: ctx.update
+            ctx
         })
     }
 })
