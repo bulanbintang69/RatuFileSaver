@@ -151,7 +151,7 @@ bot.start(async(ctx)=>{
                         }
                         await ctx.deleteMessage(ctx.message.message_id)
                         await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
-                        setTimeout(captionFunction, 1000)
+                        setTimeout(captionFunction, 2000)
                     }catch(error){
                         await ctx.reply(`Media not found or has been removed.`)
                     }
@@ -168,33 +168,33 @@ bot.start(async(ctx)=>{
                         if(res2.type=='video'){
                             await ctx.deleteMessage(ctx.message.message_id)
                             if(!res2.caption) {
-                                setTimeout(captionFunction2, 1000)
+                                setTimeout(captionFunction2, 2000)
                                 return await ctx.replyWithVideo(res2.file_id);
                             }
                             await ctx.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             });
-                                setTimeout(captionFunction2, 1000)
+                                setTimeout(captionFunction2, 2000)
                         }else if(res2.type=='photo'){
                             await ctx.deleteMessage(ctx.message.message_id)
                             if(!res2.caption) {
-                                setTimeout(captionFunction2, 1000)
+                                setTimeout(captionFunction2, 2000)
                                 return await ctx.replyWithPhoto(res2.file_id);
                             }
                             await ctx.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             });
-                                setTimeout(captionFunction2, 1000)
+                                setTimeout(captionFunction2, 2000)
                         }else if(res2.type=='document'){
                             await ctx.deleteMessage(ctx.message.message_id)
                             if(!res2.caption) {
-                                setTimeout(captionFunction2, 1000)
+                                setTimeout(captionFunction2, 2000)
                                 return await ctx.replyWithDocument(res2.file_id);
                             }
                             await ctx.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
                                 parse_mode:'HTML'
                             })
-                                setTimeout(captionFunction2, 1000)
+                                setTimeout(captionFunction2, 2000)
                         }
                     }catch(error){
                         await ctx.deleteMessage(ctx.message.message_id)
@@ -292,7 +292,7 @@ bot.start(async(ctx)=>{
                                         }else{
                                             await ctx.deleteMessage(ctx.message.message_id)
                                             await ctx.telegram.sendMediaGroup(ctx.chat.id, mediagroup);
-                                            setTimeout(captionFunction, 1000)
+                                            setTimeout(captionFunction, 2000)
                                         }
                                     })
                                 }catch(error){
@@ -329,33 +329,33 @@ bot.start(async(ctx)=>{
                                             if(res2.type=='video'){
                                                 await ctx.deleteMessage(ctx.message.message_id)
                                                 if(!res2.caption) {
-                                                    setTimeout(captionFunction2, 1000)
+                                                    setTimeout(captionFunction2, 2000)
                                                     return ctx.replyWithVideo(res2.file_id);
                                                 }
                                                 await ctx.replyWithVideo(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 });
-                                                    setTimeout(captionFunction2, 1000)
+                                                    setTimeout(captionFunction2, 2000)
                                             }else if(res2.type=='photo'){
                                                 await ctx.deleteMessage(ctx.message.message_id)
                                                 if(!res2.caption) {
-                                                    setTimeout(captionFunction2, 1000)
+                                                    setTimeout(captionFunction2, 2000)
                                                     return await ctx.replyWithPhoto(res2.file_id);
                                                 }
                                                 await ctx.replyWithPhoto(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 });
-                                                    setTimeout(captionFunction2, 1000)
+                                                    setTimeout(captionFunction2, 2000)
                                             }else if(res2.type=='document'){
                                                 await ctx.deleteMessage(ctx.message.message_id)
                                                 if(!res2.caption) {
-                                                    setTimeout(captionFunction2, 1000)
+                                                    setTimeout(captionFunction2, 2000)
                                                     return await ctx.replyWithDocument(res2.file_id);
                                                 }
                                                 await ctx.replyWithDocument(res2.file_id,{caption: `${res2.caption}`,
                                                     parse_mode:'HTML'
                                                 })
-                                                    setTimeout(captionFunction2, 1000)
+                                                    setTimeout(captionFunction2, 2000)
                                             }
                                         }
                                     })
@@ -1192,7 +1192,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1000);
+        }, 2000);
     });
     const array1 = [ctx];
     const element = array1.shift();
