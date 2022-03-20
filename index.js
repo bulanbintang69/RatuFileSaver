@@ -1485,12 +1485,14 @@ bot.command('stats',async(ctx)=>{
         }
     })
 })
- 
+
+bot.launch();
+
 //heroku config
-domain = `${process.env.DOMAIN}.herokuapp.com`
-bot.launch({
-    webhook:{
-       domain:domain,
-        port:Number(process.env.PORT) 
-    }
-})
+//domain = `${process.env.DOMAIN}.herokuapp.com`
+//bot.launch({
+//    webhook:{
+//       domain:domain,
+//        port:Number(process.env.PORT) 
+//    }
+//})
