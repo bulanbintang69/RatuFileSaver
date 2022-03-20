@@ -1200,7 +1200,7 @@ bot.use(filesMiddleware())
 
 function filesMiddleware () {
     return (ctx, next) => {
-        files.process(processFiles)
+        files.process(async job => processFiles(job.data.ctx))
 
         // your code
 
