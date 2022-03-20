@@ -1459,7 +1459,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
             }
         }
     }
-    await next();
+    return next();
 })
 
 bot.command('stats',async(ctx)=>{
