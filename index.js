@@ -100,7 +100,7 @@ const inKey2 = [
     [{text: `${url3}`, url: `${url4}`}]
 ];
 
-bot.on('message', ctx => {
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     const { video, photo, document } = ctx.message
     if (video || photo || document) {
         // add context to queue if video, photo or document exists
