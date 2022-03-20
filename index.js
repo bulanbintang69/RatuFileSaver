@@ -4,6 +4,7 @@ const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 
 let reply, replyWithDocument, replyWithPhoto, replyWithVideo
+const files = new Queue('files') // create queue
 const bot = new Telegraf(process.env.TOKEN);
 
 process.env.TZ = "Asia/Jakarta";
@@ -1200,7 +1201,7 @@ bot.use(filesMiddleware())
 
 function filesMiddleware () {
     return (ctx, next) => {
-        files.process(async job => processFiles(job.data.ctx))
+        files.process(processFiles)
 
         // your code
 
