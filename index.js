@@ -98,9 +98,9 @@ const inKey2 = [
     [{text: `${url3}`, url: `${url4}`}]
 ];
 
-bot.use( (ctx, next) => {
+bot.use(async (ctx, next) => {
     console.time(`Processing update ${ctx.update.update_id}`)
-    next() // runs next middleware
+    await next() // runs next middleware
     // runs after next middleware finishes
     console.timeEnd(`Processing update ${ctx.update.update_id}`)
 })
@@ -1188,7 +1188,12 @@ bot.command('unbanchat', (ctx) => {
 })
 
 //saving file
-bot.on(['document', 'video', 'photo'], (ctx) => {
+bot.on(['document', 'video', 'photo'], (ctx,next) => {
+    new Promise((resolve, reject) => {
+        setTimeout(() => {
+          return resolve("Result");
+        }, 2000);
+    });
     const array1 = [ctx];
     const element = array1.shift();
     //console.log(element);
@@ -1454,6 +1459,7 @@ bot.on(['document', 'video', 'photo'], (ctx) => {
             }
         }
     }
+    return next();
 })
 
 bot.command('stats',(ctx)=>{
