@@ -1238,7 +1238,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
                     }
                 }
     
-                await saver.checkFile(`${document.file_unique_id}`).then(async res => {
+                await saver.checkFile(`${document.file_unique_id}`).then((res) => {
                     //console.log(res);
                     if(res == true) {
                         element.reply(`File already exists.`,{
@@ -1325,7 +1325,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
                     }
                 }
     
-                await saver.checkFile(`${video.file_unique_id}`).then(async res => {
+                await saver.checkFile(`${video.file_unique_id}`).then((res) => {
                     //console.log(res);
                     if(res == true) {
                         element.reply(`File already exists.`,{
@@ -1412,7 +1412,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
                     }
                 }
     
-                await saver.checkFile(`${photo.file_unique_id}`).then(async res => {
+                await saver.checkFile(`${photo.file_unique_id}`).then((res) => {
                     //console.log(res);
                     if(res == true) {
                         element.reply(`File already exists.`,{
