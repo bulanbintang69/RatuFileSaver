@@ -1447,7 +1447,6 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
             }
         }
     }
-    await next();
 })
 
 bot.command('stats',async(ctx)=>{
