@@ -1201,7 +1201,7 @@ bot.use(['document', 'video', 'photo'], async (ctx, next) => {
     console.timeEnd(`Processing update ${ctx.update.update_id}`)
 })
 
-bot.on(['document', 'video', 'photo'], async(ctx,next) => {
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const element = array1.shift();
     //console.log(element);
