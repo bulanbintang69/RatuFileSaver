@@ -1199,7 +1199,7 @@ bot.use(async (ctx, next) => {
     // runs after next middleware finishes
 })
 
-bot.on(['document', 'video', 'photo'], (ctx) => {
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const element = array1.shift();
     //console.log(element);
