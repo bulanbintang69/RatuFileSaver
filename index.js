@@ -1189,7 +1189,7 @@ bot.command('unbanchat', async(ctx) => {
 
 //saving file
 
-bot.use(['document', 'video', 'photo'], async (ctx, next) => {
+bot.use(async (ctx, next) => {
     console.time(`Processing update ${ctx.update.update_id}`)
     await new Promise((resolve, reject) => {
         setTimeout(() => {
