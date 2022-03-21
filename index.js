@@ -1193,7 +1193,7 @@ bot.use(async (ctx, next) => {
     await new Promise((resolve, reject) => {
         setTimeout(() => {
           return resolve("Result");
-        }, 1000);
+        }, 2000);
     });
     await next() // runs next middleware
     // runs after next middleware finishes
