@@ -98,13 +98,6 @@ const inKey2 = [
     [{text: `${url3}`, url: `${url4}`}]
 ];
 
-bot.use(async (ctx, next) => {
-    console.time(`Processing update ${ctx.update.update_id}`)
-    await next() // runs next middleware
-    // runs after next middleware finishes
-    console.timeEnd(`Processing update ${ctx.update.update_id}`)
-})
-
 //BOT START
 bot.start(async(ctx)=>{
     if(ctx.chat.type == 'private') {
