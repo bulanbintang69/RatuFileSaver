@@ -1181,12 +1181,7 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-bot.on(['document', 'video', 'photo'], async(ctx,next) => {
-    await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          return resolve("Result");
-        }, 2000);
-    });
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const element = array1.shift();
     //console.log(element);
@@ -1246,18 +1241,18 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 await saver.checkFile(`${document.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await element.reply(`File already exists.`,{
+                        element.reply(`File already exists.`,{
                             reply_to_message_id: element.message.message_id
                         })
                     }else{
-                        await element.replyWithDocument(document.file_id, {
+                        element.replyWithDocument(document.file_id, {
                             chat_id: element.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
                             reply_to_message_id: element.message.message_id
                         })
-                        await element.replyWithDocument(document.file_id, {
+                        element.replyWithDocument(document.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
                             caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${document.file_size} B\n<b>File ID:</b> ${document.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${document.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
@@ -1272,7 +1267,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                             uniqueId: document.file_unique_id,
                             type: 'document'
                         }
-                        await saver.saveFile(fileDetails1)
+                        saver.saveFile(fileDetails1)
                     }
                 })
             }
@@ -1333,18 +1328,18 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 await saver.checkFile(`${video.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await element.reply(`File already exists.`,{
+                        element.reply(`File already exists.`,{
                             reply_to_message_id: element.message.message_id
                         })
                     }else{
-                        await element.replyWithVideo(video.file_id, {
+                        element.replyWithVideo(video.file_id, {
                             chat_id: element.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
                             reply_to_message_id: element.message.message_id
                         })
-                        await element.replyWithVideo(video.file_id, {
+                        element.replyWithVideo(video.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
                             caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${video.file_size} B\n<b>File ID:</b> ${video.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${video.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
@@ -1359,7 +1354,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                             uniqueId: video.file_unique_id,
                             type: 'video'
                         }
-                        await saver.saveFile(fileDetails1)
+                        saver.saveFile(fileDetails1)
                     }
                 })
             }
@@ -1420,18 +1415,18 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                 await saver.checkFile(`${photo.file_unique_id}`).then(async res => {
                     //console.log(res);
                     if(res == true) {
-                        await element.reply(`File already exists.`,{
+                        element.reply(`File already exists.`,{
                             reply_to_message_id: element.message.message_id
                         })
                     }else{
-                        await element.replyWithPhoto(photo.file_id, {
+                        element.replyWithPhoto(photo.file_id, {
                             chat_id: element.chat.id,
                             caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
                             reply_to_message_id: element.message.message_id
                         })
-                        await element.replyWithPhoto(photo.file_id, {
+                        element.replyWithPhoto(photo.file_id, {
                             chat_id: process.env.LOG_CHANNEL,
                             caption: `${tag} \n<b>From:</b> ${element.from.id}\n<b>Name:</b> <a href="tg://user?id=${element.from.id}">${first_name(element)} ${last_name(element)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
                             parse_mode:'HTML'
@@ -1446,7 +1441,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                             uniqueId: photo.file_unique_id,
                             type: 'photo'
                         }
-                        await saver.saveFile(fileDetails1)
+                        saver.saveFile(fileDetails1)
                     }
                 })
             }
