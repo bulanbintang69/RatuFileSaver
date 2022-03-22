@@ -1182,7 +1182,18 @@ bot.command('unbanchat', async(ctx) => {
 
 //saving file
 bot.on(['document', 'video', 'photo'], async(ctx) => {
-    const array1 = [{ctx}];
+    const array1 = [
+        {
+            file_name: file_name2,
+            userId: ctx.from.id,
+            file_id: ctx.message.video.file_id,
+            mediaId: ctx.message.media_group_id,
+            caption: ctx.message.caption,
+            file_size: ctx.message.video.file_size,
+            uniqueId: ctx.message.video.file_unique_id,
+            type: 'video'
+        }
+    ];
     const element = array1.shift();
     console.log(element);
 })
