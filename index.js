@@ -1287,7 +1287,7 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
                     var mediaId = ``;
                     var mediaId2 = ``;
                     if(video.file_name == undefined){
-                        var file_name2 = `${today2(ctx}`;
+                        var file_name2 = `${today2(ctx)}`;
                         if(element.message.caption == undefined){
                             var caption2 =  ``;
                         }else{
