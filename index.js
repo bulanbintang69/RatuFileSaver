@@ -1184,7 +1184,6 @@ bot.command('unbanchat', async(ctx) => {
 bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [
         {
-            file_name: file_name2,
             userId: ctx.from.id,
             file_id: ctx.message.video.file_id,
             mediaId: ctx.message.media_group_id,
