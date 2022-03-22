@@ -1181,13 +1181,7 @@ bot.command('unbanchat', async(ctx) => {
 })
 
 //saving file
-bot.on(['document', 'video', 'photo'], async(ctx,next) => {
-    await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          return resolve("Result");
-        }, 2000);
-    });
-
+bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
     const count = array1.push();
     //console.log(array1);
@@ -1453,7 +1447,6 @@ bot.on(['document', 'video', 'photo'], async(ctx,next) => {
             }
         }
     }
-    await next();
 })
 
 bot.command('stats',async(ctx)=>{
