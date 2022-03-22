@@ -1183,9 +1183,8 @@ bot.command('unbanchat', async(ctx) => {
 //saving file
 bot.on(['document', 'video', 'photo'], async(ctx) => {
     const array1 = [ctx];
-    const count = array1.push();
+    const count = array1.push(ctx);
     console.log(array1);
-
 })
 
 bot.command('stats',async(ctx)=>{
