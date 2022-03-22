@@ -1195,7 +1195,7 @@ bot.on(['document', 'video', 'photo'], async(ctx) => {
         }
     ];
     const element = array1.shift();
-    console.log(element.file_id);
+    console.log(element);
 })
 
 bot.command('stats',async(ctx)=>{
