@@ -3,13 +3,6 @@ const { Telegraf } = require('telegraf');
 const crypto = require('crypto');
 const bot = new Telegraf(process.env.TOKEN);
 
-bot.use(async (ctx, next) => {
-    console.time(`Processing update ${ctx.update.update_id}`)
-    await next() // runs next middleware
-    // runs after next middleware finishes
-    console.timeEnd(`Processing update ${ctx.update.update_id}`)
-})
-
 process.env.TZ = "Asia/Jakarta";
 
 //database
@@ -101,6 +94,13 @@ const inKey = [
 const inKey2 = [
     [{text: `${url3}`, url: `${url4}`}]
 ];
+
+bot.use(async (ctx, next) => {
+    console.time(`Processing update ${ctx.update.update_id}`)
+    await next() // runs next middleware
+    // runs after next middleware finishes
+    console.timeEnd(`Processing update ${ctx.update.update_id}`)
+})
 
 //BOT START
 bot.start(async(ctx)=>{
