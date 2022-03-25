@@ -1278,10 +1278,10 @@ bot.on('video',async(ctx)=>{
     if(ctx.chat.type == 'private') {
         const video = ctx.message.video
 
-        const n = ctx.length
+        const n = video.length
         const userId = []
         for (let i = n-1; i >=0; i--) {
-            userId.push(ctx[i].ctx.from.id)
+            userId.push(video[i].ctx.from.id)
         }
 
         console.log(n)
