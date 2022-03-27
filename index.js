@@ -1492,7 +1492,7 @@ bot.command('stats',async(ctx)=>{
 
 //heroku config
 domain = `${process.env.DOMAIN}.herokuapp.com`
-bot.startWebhook(domain, null, 5000)
+bot.startWebhook(domain, null, 3000)
 
 //bot.launch({
 //    webhook:{
