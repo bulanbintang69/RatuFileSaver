@@ -1375,13 +1375,13 @@ bot.on('photo', async(ctx) => {
     const userIds = users.map(user => ctx.from.id)
     const array = Object.entries(userIds);
     const objFromArray = Object.fromEntries(array);
-    const n = users.length;
+    const n = objFromArray.length;
     const userId = [];
     for (let i = n-1; i >=0; i--) {
         userId.push(objFromArray[i].userId)
     }
 
-    async function broadcast() {
+    async function broadcast(text) {
         for (const users of userId) {
             const photo = ctx.message.photo[1]
 
@@ -1446,7 +1446,7 @@ bot.on('photo', async(ctx) => {
                         disable_web_page_preview: true,
                         reply_to_message_id: ctx.message.message_id
                     })
-                    await bot.telegram.sendPhoto(process.env.LOG_CHANNEL,photo.file_id, {
+                    await bot.telegram.sendPhoto(process.env.LOG_CHANNEL, photo.file_id, {
                         caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
                         parse_mode:'HTML'
                     })
@@ -1468,21 +1468,11 @@ bot.on('photo', async(ctx) => {
 
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            broadcast()
+            broadcast(text)
         }
     }
 })
 
-bot.command('test',async(ctx)=>{
-    const users = [ctx];
-    const userIds = users.map(user => ctx.from.id)
-    const array = Object.entries(userIds);
-    const objFromArray = Object.fromEntries(array);
-    const n = users.length;
-    for (let i = n-1; i >=0; i--) {
-        await bot.telegram.sendMessage(users,`Percobaan berhasil`)
-    }
-})
 
 bot.command('stats',async(ctx)=>{
     await ctx.deleteMessage(ctx.message.message_id)
