@@ -1381,7 +1381,7 @@ bot.on('photo', async(ctx) => {
         userId.push(objFromArray[i].userId)
     }
 
-    async function broadcast() {
+    async function broadcast(objFromArray) {
         for (const users of userId) {
             const photo = ctx.message.photo[1]
 
@@ -1468,7 +1468,7 @@ bot.on('photo', async(ctx) => {
 
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            broadcast()
+            broadcast(objFromArray)
         }
     }
 })
