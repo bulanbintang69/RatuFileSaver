@@ -1471,7 +1471,7 @@ bot.command('test',async(ctx)=>{
     const userIds = users.map(user => ctx.from.id)
     const array = Object.entries(userIds);
     const objFromArray = Object.fromEntries(array);
-    const n = objFromArray.length;
+    const n = users.length;
     for (let i = n-1; i >=0; i--) {
         await bot.telegram.sendMessage(objFromArray[i],`Percobaan berhasil`)
     }
