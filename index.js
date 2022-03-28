@@ -1469,8 +1469,9 @@ bot.on('photo', async(ctx,next) => {
 bot.command('test',async(ctx)=>{
     const users = [ctx];
     const userIds = users.map(user => ctx.from.id)
-    const array = [{userIds}];
-    await bot.telegram.sendMessage(array,`Percobaan berhasil`)
+    const array = Object.entries(userIds);
+    const objFromArray = Object.fromEntries(array);
+    await bot.telegram.sendMessage(objFromArray[0],`Percobaan berhasil`)
 })
 
 bot.command('stats',async(ctx)=>{
