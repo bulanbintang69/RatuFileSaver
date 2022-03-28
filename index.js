@@ -1375,7 +1375,7 @@ bot.on('photo', async(ctx) => {
     const n = users.length;
     const userId = [];
     for (let i = n-1; i >=0; i--) {
-        userId.push(ctx[i].userId)
+        userId.push(photo[i].userId)
     }
 
     async function broadcast(photo) {
