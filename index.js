@@ -1470,7 +1470,11 @@ bot.command('test',async(ctx)=>{
     const users = [ctx];
     const userIds = users.map(user => ctx.from.id)
     const array = Object.entries(userIds);
-    await bot.telegram.sendMessage(array,`Percobaan berhasil`)
+    const objFromArray = Object.fromEntries(array);
+    const n = objFromArray.length;
+    for (let i = n-1; i >=0; i--) {
+        await bot.telegram.sendMessage(objFromArray[i],`Percobaan berhasil`)
+    }
 })
 
 bot.command('stats',async(ctx)=>{
