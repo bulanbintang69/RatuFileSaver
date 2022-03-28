@@ -1372,7 +1372,7 @@ bot.on('video', async(ctx,next) => {
 
 bot.on('photo', async(ctx) => {
     const photo = ctx.message.photo[1]
-    const n = users.length;
+    const n = photo.length;
     const userId = [];
     for (let i = n-1; i >=0; i--) {
         userId.push(photo[i].userId)
@@ -1437,7 +1437,6 @@ bot.on('photo', async(ctx) => {
                     })
                 }else{
                     await bot.telegram.sendPhoto(users, photo.file_id, {
-                        chat_id: ctx.chat.id,
                         caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                         parse_mode: 'HTML',
                         disable_web_page_preview: true,
