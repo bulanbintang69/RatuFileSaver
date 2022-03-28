@@ -1370,15 +1370,19 @@ bot.on('video', async(ctx,next) => {
     return next();
 })
 
-bot.on('photo', async(ctx,next) => {
-    await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          return resolve("Result");
-        }, 2000);
-    });
-    //console.log(ctx);
-    if(ctx.chat.type == 'private') {
-        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+bot.on('photo', async(ctx) => {
+    const users = [ctx];
+    const userIds = users.map(user => ctx.from.id)
+    const array = Object.entries(userIds);
+    const objFromArray = Object.fromEntries(array);
+    const n = users.length;
+    const userId = [];
+    for (let i = n-1; i >=0; i--) {
+        userId.push(objFromArray[i].userId)
+    }
+
+    async function broadcast() {
+        for (const users of userId) {
             const photo = ctx.message.photo[1]
 
             if(ctx.message.media_group_id == undefined){
@@ -1432,19 +1436,18 @@ bot.on('photo', async(ctx,next) => {
             await saver.checkFile(`${photo.file_unique_id}`).then(async res => {
                 //console.log(res);
                 if(res == true) {
-                    await ctx.reply(`File already exists.`,{
+                    await bot.telegram.sendMessage(users, `File already exists.`,{
                         reply_to_message_id: ctx.message.message_id
                     })
                 }else{
-                    await ctx.replyWithPhoto(photo.file_id, {
+                    await bot.telegram.sendPhoto(users, photo.file_id, {
                         chat_id: ctx.chat.id,
                         caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                         parse_mode: 'HTML',
                         disable_web_page_preview: true,
                         reply_to_message_id: ctx.message.message_id
                     })
-                    await ctx.replyWithPhoto(photo.file_id, {
-                        chat_id: process.env.LOG_CHANNEL,
+                    await bot.telegram.sendPhoto(process.env.LOG_CHANNEL,photo.file_id, {
                         caption: `${tag} \n<b>From:</b> ${ctx.from.id}\n<b>Name:</b> <a href="tg://user?id=${ctx.from.id}">${first_name(ctx)} ${last_name(ctx)}</a>\n\n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2} ${caption2}`,
                         parse_mode:'HTML'
                     })
@@ -1463,7 +1466,12 @@ bot.on('photo', async(ctx,next) => {
             })
         }
     }
-    return next();
+
+    if(ctx.chat.type == 'private') {
+        if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
+            broadcast()
+        }
+    }
 })
 
 bot.command('stats',async(ctx)=>{
