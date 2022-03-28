@@ -1372,18 +1372,15 @@ bot.on('video', async(ctx,next) => {
 
 bot.on('photo', async(ctx) => {
     const users = [ctx];
-    const userIds = users.map(user => ctx.from.id)
-    const array = Object.entries(userIds);
-    const objFromArray = Object.fromEntries(array);
+    const photo = ctx.message.photo[1]
     const n = users.length;
     const userId = [];
     for (let i = n-1; i >=0; i--) {
-        userId.push(objFromArray[i].userId)
+        userId.push(users[i].userId)
     }
 
-    async function broadcast() {
+    async function broadcast(photo) {
         for (const users of userId) {
-            const photo = ctx.message.photo[1]
 
             if(ctx.message.media_group_id == undefined){
                 var tag = `✔️ Photo save`;
@@ -1441,7 +1438,6 @@ bot.on('photo', async(ctx) => {
                     })
                 }else{
                     await bot.telegram.sendPhoto(users, photo.file_id, {
-
                         caption: `${tag} \n<b>Name file:</b> ${file_name2}\n<b>Size:</b> ${photo.file_size} B\n<b>File ID:</b> ${photo.file_unique_id} ${mediaId} \n\nhttps://t.me/${process.env.BOTUSERNAME}?start=${photo.file_unique_id} ${mediaId2}`,
                         parse_mode: 'HTML',
                         disable_web_page_preview: true,
@@ -1469,7 +1465,7 @@ bot.on('photo', async(ctx) => {
 
     if(ctx.chat.type == 'private') {
         if(ctx.from.id == Number(process.env.ADMIN) || ctx.from.id == Number(process.env.ADMIN1) || ctx.from.id == Number(process.env.ADMIN2)){
-            broadcast()
+            broadcast(photo)
         }
     }
 })
